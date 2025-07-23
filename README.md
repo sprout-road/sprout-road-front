@@ -9,8 +9,12 @@ npm install
 npm run dev
 ```
 
-## TypeScirpt + Vite + Tailwindcss
-
+## TypeScript + Vite + Tailwindcss
+```
+TypeScript는 타입 안정성을 확보할 수 있고 예상치 못한 오류를 엄격한 타입 검사로 방지할 수 있음
+Vite는 빌드 도구이며 특히 개발 서버 시작 속도가 빠르고, 변경 사항에 대한 즉각적인 업데이트를 제공하며, 프로덕션 빌드 시에도 빠른 성능을 보장함
+Tailwindcss는 반응형 디자인 구현에 능하며 jsx / tsx 파일 내에서 별도 파일 생성 없이 스타일링 가능 (전역 스타일도 쉽게 생성 가능 - 미사용)
+```
 
 ## 디렉토리 구조
 ```
