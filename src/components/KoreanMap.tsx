@@ -23,7 +23,30 @@ interface Feature {
 function KoreanMap({ sidoData, highlightInfo }: KoreanMapProps) {
     const [sigunguData, setSigunguData] = useState<SigunguGeoJson | null>(null);
     const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
-    const [showMarker, setShowMarker] = useState<boolean>(true);
+
+    // 🗂️ LocalStorage에서 마커 표시 상태 불러오기
+    const [showMarker, setShowMarker] = useState<boolean>(() => {
+        try {
+            const saved = localStorage.getItem('map_show_marker');
+            return saved !== null ? JSON.parse(saved) : true; // 기본값: true
+        } catch (error) {
+            console.error('LocalStorage 읽기 실패:', error);
+            return true;
+        }
+    });
+
+    // 🗂️ 마커 표시 상태가 변경될 때 LocalStorage에 저장
+    const toggleMarker = () => {
+        const newState = !showMarker;
+        setShowMarker(newState);
+
+        try {
+            localStorage.setItem('map_show_marker', JSON.stringify(newState));
+            console.log('🗂️ 마커 상태 저장:', newState);
+        } catch (error) {
+            console.error('LocalStorage 저장 실패:', error);
+        }
+    };
 
     // 한국 지도 경계 (웹앱 최적화 - 약간의 이동 허용)
     const koreanBounds: LatLngBoundsExpression = [
@@ -262,7 +285,7 @@ function KoreanMap({ sidoData, highlightInfo }: KoreanMapProps) {
 
             {/* 🎯 위치 표시 토글 버튼 (우하단) */}
             <button
-                onClick={() => setShowMarker(!showMarker)}
+                onClick={toggleMarker}
                 className={`
                     absolute bottom-6 right-6 z-10 
                     w-12 h-12 rounded-full shadow-lg
