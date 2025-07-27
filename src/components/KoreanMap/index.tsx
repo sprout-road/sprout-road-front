@@ -37,7 +37,6 @@ function KoreanMap({ sidoData, highlightInfo, sigunguData = null }: KoreanMapPro
                     sidoData={sidoData}
                     sigunguData={sigunguData}
                     highlightInfo={highlightInfo}
-                    showLocationInfo={false} // RegionColoring에서는 헤더가 있으니 숨김
                 />
             </MapContainer>
         </div>

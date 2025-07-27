@@ -57,10 +57,21 @@ function MapLayers({
     };
 
     // ✅ 시군구 피처 이벤트 (정확한 타입 사용)
+
     const onEachSigunguFeature = (feature: { properties: Record<string, string> }, layer: Layer) => {
         // 시군구 클릭 이벤트
         layer.on('click', () => {
             console.log('클릭한 시군구:', feature.properties);
+
+            // 시군구에서 시도 코드 추출 (sidoCode 또는 sigCode에서 앞 2자리)
+            const sidoCode = feature.properties.sidoCode ||
+                feature.properties.sigCode?.substring(0, 2);
+
+            if (sidoCode) {
+                console.log('시군구에서 추출한 시도 코드:', sidoCode);
+                // 해당 시도의 지역 상세 페이지로 이동
+                navigate(`/region/${sidoCode}`);
+            }
         });
     };
 
