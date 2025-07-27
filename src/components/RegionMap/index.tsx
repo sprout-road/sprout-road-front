@@ -1,12 +1,8 @@
-import { MapContainer, GeoJSON, Marker, useMap } from 'react-leaflet';
-import { LatLngBoundsExpression, Layer, PathOptions } from 'leaflet';
-import { useEffect, useState } from 'react';
-import { SigunguGeoJson, LocationHighlightResponse } from '../../types/geoTypes';
-import { createLocationMarker } from '../../shared/utils/markerUtils';
-import { useMarkerState } from '../KoreanMap/hooks/useMarkerState';
-import { useMarkerPosition } from '../KoreanMap/hooks/useMarkerPosition';
-import MapControls from '../KoreanMap/components/MapControls';
-import { useMemo } from 'react';
+import {GeoJSON, MapContainer, useMap} from 'react-leaflet';
+import {LatLngBoundsExpression, Layer, PathOptions} from 'leaflet';
+import {useEffect, useMemo, useState} from 'react';
+import {LocationHighlightResponse, SidoBoundaryGeoJson, SigunguGeoJson} from '../../types/geoTypes';
+import {LocationApiService} from '../../services/locationApi';
 import 'leaflet/dist/leaflet.css';
 
 interface RegionMapProps {
@@ -21,8 +17,8 @@ interface SigunguFeature {
         sigNameKo: string;
         sigNameEn: string;
         sidoNameKo?: string; // 시도명도 포함
-        centerLat: number;
-        centerLng: number;
+        centerLat?: number;
+        centerLng?: number;
     };
 }
 
@@ -76,14 +72,8 @@ function RegionLabels({ sigunguCenters }: { sigunguCenters: Array<{ name: string
                 >
                     <div
                         className={`px-2 py-1 rounded text-xs whitespace-nowrap ${
-                            label.isHighlighted
-                                ? 'bg-red-100 text-red-800 font-bold border border-red-300'
-                                : 'bg-white/90 text-gray-700 border border-gray-200'
+                            label.isHighlighted ? 'text-red-800 font-bold' : 'text-gray-700'
                         }`}
-                        style={{
-                            backdropFilter: 'blur(4px)',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                        }}
                     >
                         {label.name}
                     </div>
@@ -94,8 +84,8 @@ function RegionLabels({ sigunguCenters }: { sigunguCenters: Array<{ name: string
 }
 
 function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
-    const { showMarker, toggleMarker } = useMarkerState();
-    const markerPosition = useMarkerPosition(highlightInfo);
+    // 시도 바운더리 데이터 상태
+    const [boundaryData, setBoundaryData] = useState<SidoBoundaryGeoJson | null>(null);
 
     // 좌표 처리 헬퍼 함수
     const processCoordinates = (coord: number[], bounds: { minLat: number, maxLat: number, minLng: number, maxLng: number }) => {
@@ -203,13 +193,26 @@ function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
         }
     };
 
-    // 디버깅: 데이터 확인
+    // 시도 바운더리 데이터 로드
     useEffect(() => {
-        console.log('🗺️ RegionMap 데이터 확인:');
-        console.log('sigunguData:', sigunguData);
-        console.log('sigunguCenters:', sigunguCenters);
-        console.log('highlightInfo:', highlightInfo);
-    }, [sigunguData, sigunguCenters, highlightInfo]);
+        const loadBoundaryData = async () => {
+            if (!sigunguData.features || sigunguData.features.length === 0) return;
+
+            try {
+                // 첫 번째 feature에서 sidoCode 추출
+                const sidoCode = sigunguData.features[0].properties.sidoCode;
+                console.log('🔲 시도 바운더리 데이터 로드:', sidoCode);
+
+                const boundaries = await LocationApiService.getSidoBoundariesBySidoCode(sidoCode);
+                setBoundaryData(boundaries);
+                console.log('✅ 시도 바운더리 데이터 로드 완료:', boundaries);
+            } catch (error) {
+                console.error('❌ 시도 바운더리 데이터 로드 실패:', error);
+            }
+        };
+
+        loadBoundaryData();
+    }, [sigunguData]);
 
     return (
         <div className="relative w-full h-full overflow-hidden bg-white">
@@ -233,7 +236,7 @@ function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
                 maxBounds={regionBounds}
                 maxBoundsViscosity={0.8}
             >
-                {/* 시군구 레이어 */}
+                {/* 시군구 면 레이어 */}
                 <GeoJSON
                     key={`region-${regionName}`}
                     data={sigunguData}
@@ -241,23 +244,23 @@ function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
                     onEachFeature={onEachSigunguFeature}
                 />
 
-                {/* 지역명 라벨 (지도 확대/축소에 따라 위치 자동 조정) */}
-                <RegionLabels sigunguCenters={sigunguCenters} />
-
-                {/* 현재 위치 마커 */}
-                {showMarker && markerPosition && highlightInfo && (
-                    <Marker
-                        position={markerPosition}
-                        icon={createLocationMarker(highlightInfo.targetName)}
+                {/* 시도 바운더리 오버레이 (경계 명확화) */}
+                {boundaryData && (
+                    <GeoJSON
+                        key={`sido-boundary-overlay-${regionName}`}
+                        data={boundaryData}
+                        style={{
+                            color: '#666666',
+                            weight: 3,
+                            opacity: 0.7,
+                            fill: false
+                        }}
                     />
                 )}
-            </MapContainer>
 
-            {/* 마커 토글 버튼 */}
-            <MapControls
-                showMarker={showMarker}
-                onToggleMarker={toggleMarker}
-            />
+                {/* 지역명 라벨 (지도 확대/축소에 따라 위치 자동 조정) */}
+                <RegionLabels sigunguCenters={sigunguCenters} />
+            </MapContainer>
 
             {/* 현재 위치 표시 (해당 지역에 있을 때만) */}
             {highlightInfo && (

@@ -48,12 +48,6 @@ function RegionDetail() {
         fetchSigunguData();
     }, [sidoCode]);
 
-    // 현재 위치가 이 시도에 속하는지 체크
-    const isCurrentLocationInThisRegion = (): boolean => {
-        if (!currentLocation || !sidoCode) return false;
-        return currentLocation.parentSidoCode === sidoCode;
-    };
-
     if (loading) {
         return (
             <LoadingSpinner
@@ -102,7 +96,7 @@ function RegionDetail() {
         {sigunguData && (
             <RegionMap
                 sigunguData={sigunguData}
-    highlightInfo={isCurrentLocationInThisRegion() ? currentLocation : null}
+    highlightInfo={currentLocation}
     regionName={regionName}
     />
 )}
