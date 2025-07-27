@@ -1,6 +1,6 @@
-import { LocationRequest, LocationHighlightResponse } from '../types/geoTypes';
+import {LocationHighlightResponse} from '../types/geoTypes';
 
-const API_BASE_URL = 'http://localhost:8080/api/gis';
+const API_BASE_URL = 'https://api.deepdivers.store/api/gis';
 
 export class LocationApiService {
     /**
@@ -8,29 +8,21 @@ export class LocationApiService {
      */
     static async findLocationForHighlight(lat: number, lng: number): Promise<LocationHighlightResponse> {
         try {
-            const requestBody: LocationRequest = { lat, lng };
-
-            const response = await fetch(`${API_BASE_URL}/locate/highlight`, {
-                method: 'POST',
+            console.log(lat, lng);
+            const response = await fetch(`${API_BASE_URL}/locate/highlight?lat=35.1795543&lng=129.0756416`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
+                }
             });
 
             if (!response.ok) {
                 throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
             }
-
-            const data: LocationHighlightResponse = await response.json();
-            return data;
+            return await response.json();
         } catch (error) {
             console.error('위치 하이라이트 정보 조회 실패:', error);
-            throw new Error(
-                error instanceof Error
-                    ? error.message
-                    : '위치 정보를 가져오는데 실패했습니다.'
-            );
+            throw new Error(error instanceof Error ? error.message : '위치 정보를 가져오는데 실패했습니다.');
         }
     }
 
@@ -40,7 +32,7 @@ export class LocationApiService {
     static async getSigunguBySidoCode(sidoCode: string) {
         try {
             const response = await fetch(`${API_BASE_URL}/sigungu/${sidoCode}`);
-
+            console.log("RESPONSE: ", response);
             if (!response.ok) {
                 throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
             }
@@ -58,6 +50,7 @@ export class LocationApiService {
     static async getAllSido() {
         try {
             const response = await fetch(`${API_BASE_URL}/sido`);
+            console.log("RESPONSE: ", response);
 
             if (!response.ok) {
                 throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
