@@ -1,219 +1,51 @@
-import {GeoJSON, MapContainer, useMap} from 'react-leaflet';
-import {LatLngBoundsExpression, Layer, PathOptions} from 'leaflet';
-import {useEffect, useMemo, useState} from 'react';
-import {LocationHighlightResponse, SidoBoundaryGeoJson, SigunguGeoJson} from '../../types/geoTypes';
-import {LocationApiService} from '../../services/locationApi';
+import { GeoJSON, MapContainer } from 'react-leaflet';
+import { useMemo } from 'react';
+import { Feature, Geometry } from 'geojson';
+import { LocationHighlightResponse, SigunguGeoJson } from '../../types/geoTypes';
+import RegionLabels from './RegionLabels';
+import { useBoundaryData } from './hooks/useBoundaryData';
+import {
+    calculateRegionBounds,
+    calculateSigunguCenters,
+    getSigunguStyle,
+    getBoundaryStyle
+} from './utils';
+import { createSigunguEventHandler } from './eventHandlers';
+import { MAP_CONFIG } from './constants';
 import 'leaflet/dist/leaflet.css';
 
 interface RegionMapProps {
     sigunguData: SigunguGeoJson;
     highlightInfo: LocationHighlightResponse | null;
     regionName: string;
-    isCompact?: boolean; // 축소 모드 추가
-}
-
-interface SigunguFeature {
-    properties: {
-        sigCode: string;
-        sigNameKo: string;
-        sigNameEn: string;
-        sidoNameKo?: string; // 시도명도 포함
-        centerLat?: number;
-        centerLng?: number;
-    };
-}
-
-// 지역명 라벨을 지도 위에 표시하는 컴포넌트
-function RegionLabels({ sigunguCenters }: { sigunguCenters: Array<{ name: string; lat: number; lng: number; isHighlighted: boolean }> }) {
-    const map = useMap();
-    const [labels, setLabels] = useState<Array<{ name: string; x: number; y: number; isHighlighted: boolean }>>([]);
-
-    // 지도 이동/줌 시 라벨 위치 업데이트
-    useEffect(() => {
-        const updateLabelPositions = () => {
-            const newLabels = sigunguCenters.map(center => {
-                const point = map.latLngToContainerPoint([center.lat, center.lng]);
-                return {
-                    name: center.name,
-                    x: point.x,
-                    y: point.y,
-                    isHighlighted: center.isHighlighted
-                };
-            });
-            setLabels(newLabels);
-        };
-
-        // 초기 위치 설정
-        updateLabelPositions();
-
-        // 지도 이벤트 리스너 등록
-        map.on('zoom', updateLabelPositions);
-        map.on('move', updateLabelPositions);
-        map.on('resize', updateLabelPositions);
-
-        // 클린업
-        return () => {
-            map.off('zoom', updateLabelPositions);
-            map.off('move', updateLabelPositions);
-            map.off('resize', updateLabelPositions);
-        };
-    }, [map, sigunguCenters]);
-
-    return (
-        <>
-            {labels.map((label, index) => (
-                <div
-                    key={`label-${index}`}
-                    className="absolute pointer-events-none select-none z-10"
-                    style={{
-                        left: label.x,
-                        top: label.y,
-                        transform: 'translate(-50%, -50%)'
-                    }}
-                >
-                    <div
-                        className={`px-2 py-1 rounded text-[0.6rem] whitespace-nowrap ${
-                            label.isHighlighted ? 'text-red-800 font-bold' : 'text-gray-700'
-                        }`}
-                    >
-                        {label.name}
-                    </div>
-                </div>
-            ))}
-        </>
-    );
+    isCompact?: boolean;
 }
 
 function RegionMap({ sigunguData, highlightInfo, regionName, isCompact = false }: RegionMapProps) {
-    // 시도 바운더리 데이터 상태
-    const [boundaryData, setBoundaryData] = useState<SidoBoundaryGeoJson | null>(null);
+    // Custom Hook으로 바운더리 데이터 관리
+    const { boundaryData } = useBoundaryData(sigunguData);
 
-    // 좌표 처리 헬퍼 함수
-    const processCoordinates = (coord: number[], bounds: { minLat: number, maxLat: number, minLng: number, maxLng: number }) => {
-        const lng = coord[0];
-        const lat = coord[1];
-        bounds.minLat = Math.min(bounds.minLat, lat);
-        bounds.maxLat = Math.max(bounds.maxLat, lat);
-        bounds.minLng = Math.min(bounds.minLng, lng);
-        bounds.maxLng = Math.max(bounds.maxLng, lng);
-    };
+    // 계산된 값들 (메모이제이션)
+    const regionBounds = useMemo(() =>
+        calculateRegionBounds(sigunguData), [sigunguData]
+    );
 
-    // 지역 경계 계산 (GeoJSON 데이터에서 자동 계산)
-    const regionBounds: LatLngBoundsExpression = useMemo(() => {
-        if (!sigunguData.features || sigunguData.features.length === 0) {
-            return [[33, 124], [39, 132]]; // 기본값
-        }
+    const sigunguCenters = useMemo(() =>
+        calculateSigunguCenters(sigunguData, highlightInfo), [sigunguData, highlightInfo]
+    );
 
-        const bounds = {
-            minLat: Infinity,
-            maxLat: -Infinity,
-            minLng: Infinity,
-            maxLng: -Infinity
-        };
+    // 이벤트 핸들러
+    const onEachSigunguFeature = useMemo(() =>
+        createSigunguEventHandler(highlightInfo), [highlightInfo]
+    );
 
-        sigunguData.features.forEach((feature) => {
-            if (feature.geometry.type === 'Polygon') {
-                feature.geometry.coordinates[0].forEach((coord) => {
-                    processCoordinates(coord, bounds);
-                });
-            } else if (feature.geometry.type === 'MultiPolygon') {
-                feature.geometry.coordinates.forEach((polygon) => {
-                    const coords = polygon as unknown as number[][][];
-                    coords[0].forEach((coord) => {
-                        processCoordinates(coord, bounds);
-                    });
-                });
-            }
-        });
+    // 스타일 함수 (타입 안전)
+    const sigunguStyleFunction = useMemo(() =>
+            (feature: Feature<Geometry, unknown> | undefined) => getSigunguStyle(feature, highlightInfo),
+        [highlightInfo]
+    );
 
-        // 약간의 여백 추가
-        const latPadding = (bounds.maxLat - bounds.minLat) * 0.1;
-        const lngPadding = (bounds.maxLng - bounds.minLng) * 0.1;
-
-        return [
-            [bounds.minLat - latPadding, bounds.minLng - lngPadding],
-            [bounds.maxLat + latPadding, bounds.maxLng + lngPadding]
-        ];
-    }, [sigunguData]);
-
-    // 각 시군구의 중심점 계산 (백엔드 중심좌표 우선 사용)
-    const sigunguCenters = useMemo(() => {
-        if (!sigunguData.features) return [];
-
-        return sigunguData.features.map((feature) => {
-            return {
-                name: feature.properties.sigNameKo,
-                lat: feature.properties.centerLat,
-                lng: feature.properties.centerLng,
-                isHighlighted: highlightInfo?.highlightType === 'sigungu' &&
-                    feature.properties.sigCode === highlightInfo.targetCode
-            };
-        });
-    }, [sigunguData, highlightInfo]);
-
-    // 시군구 스타일링 (기본적으로 색칠 없음)
-    const getSigunguStyle = (feature?: SigunguFeature): PathOptions => {
-        if (!feature) return {};
-
-        const isHighlighted = highlightInfo?.highlightType === 'sigungu' &&
-            feature.properties.sigCode === highlightInfo.targetCode;
-
-        return {
-            color: '#666666',
-            weight: 1,
-            opacity: 1,
-            fillColor: isHighlighted ? '#ff6b6b' : 'transparent', // 기본: 투명
-            fillOpacity: isHighlighted ? 0.6 : 0 // 기본: 투명
-        };
-    };
-
-    // 시군구 이벤트 핸들러
-    const onEachSigunguFeature = (feature: SigunguFeature, layer: Layer) => {
-        // 시군구 클릭 이벤트
-        layer.on('click', () => {
-            console.log('클릭한 시군구:', feature.properties);
-            // 추후 시군구 상세 페이지로 이동하거나 추가 기능 구현
-        });
-
-        // 마우스 오버 효과 (하이라이트되지 않은 경우만)
-        if (!(highlightInfo?.highlightType === 'sigungu' &&
-            feature.properties.sigCode === highlightInfo.targetCode)) {
-
-            layer.on('mouseover', () => {
-                const targetLayer = layer as Layer & { setStyle: (style: PathOptions) => void };
-                targetLayer.setStyle({
-                    fillColor: '#e3f2fd',
-                    fillOpacity: 0.3
-                });
-            });
-
-            layer.on('mouseout', () => {
-                const targetLayer = layer as Layer & { setStyle: (style: PathOptions) => void };
-                targetLayer.setStyle(getSigunguStyle(feature));
-            });
-        }
-    };
-
-    // 시도 바운더리 데이터 로드
-    useEffect(() => {
-        const loadBoundaryData = async () => {
-            if (!sigunguData.features || sigunguData.features.length === 0) return;
-
-            try {
-                // 첫 번째 feature에서 sidoCode 추출
-                const sidoCode = sigunguData.features[0].properties.sidoCode;
-                console.log('🔲 시도 바운더리 데이터 로드:', sidoCode);
-
-                const boundaries = await LocationApiService.getSidoBoundariesBySidoCode(sidoCode);
-                setBoundaryData(boundaries);
-                console.log('✅ 시도 바운더리 데이터 로드 완료:', boundaries);
-            } catch (error) {
-                console.error('❌ 시도 바운더리 데이터 로드 실패:', error);
-            }
-        };
-
-        loadBoundaryData();
-    }, [sigunguData]);
+    const zoomConfig = isCompact ? MAP_CONFIG.ZOOM.COMPACT : MAP_CONFIG.ZOOM.NORMAL;
 
     return (
         <div className="relative w-full h-full overflow-hidden bg-white">
@@ -232,34 +64,29 @@ function RegionMap({ sigunguData, highlightInfo, regionName, isCompact = false }
                 boxZoom={false}
                 keyboard={true}
                 attributionControl={false}
-                minZoom={isCompact ? 6 : 8}
-                maxZoom={isCompact ? 10 : 12}
+                minZoom={zoomConfig.MIN}
+                maxZoom={zoomConfig.MAX}
                 maxBounds={regionBounds}
-                maxBoundsViscosity={0.8}
+                maxBoundsViscosity={MAP_CONFIG.BOUNDS_VISCOSITY}
             >
                 {/* 시군구 면 레이어 */}
                 <GeoJSON
                     key={`region-${regionName}`}
                     data={sigunguData}
-                    style={getSigunguStyle}
+                    style={sigunguStyleFunction}
                     onEachFeature={onEachSigunguFeature}
                 />
 
-                {/* 시도 바운더리 오버레이 (경계 명확화) */}
+                {/* 시도 바운더리 오버레이 */}
                 {boundaryData && (
                     <GeoJSON
                         key={`sido-boundary-overlay-${regionName}`}
                         data={boundaryData}
-                        style={{
-                            color: '#666666',
-                            weight: isCompact ? 2 : 3,
-                            opacity: 0.7,
-                            fill: false
-                        }}
+                        style={getBoundaryStyle(isCompact)}
                     />
                 )}
 
-                {/* 지역명 라벨 (지도 확대/축소에 따라 위치 자동 조정) */}
+                {/* 지역명 라벨 */}
                 <RegionLabels sigunguCenters={sigunguCenters} />
             </MapContainer>
         </div>
