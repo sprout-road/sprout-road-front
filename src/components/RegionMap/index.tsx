@@ -9,6 +9,7 @@ interface RegionMapProps {
     sigunguData: SigunguGeoJson;
     highlightInfo: LocationHighlightResponse | null;
     regionName: string;
+    isCompact?: boolean; // 축소 모드 추가
 }
 
 interface SigunguFeature {
@@ -71,7 +72,7 @@ function RegionLabels({ sigunguCenters }: { sigunguCenters: Array<{ name: string
                     }}
                 >
                     <div
-                        className={`px-2 py-1 rounded text-xs whitespace-nowrap ${
+                        className={`px-2 py-1 rounded text-[0.6rem] whitespace-nowrap ${
                             label.isHighlighted ? 'text-red-800 font-bold' : 'text-gray-700'
                         }`}
                     >
@@ -83,7 +84,7 @@ function RegionLabels({ sigunguCenters }: { sigunguCenters: Array<{ name: string
     );
 }
 
-function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
+function RegionMap({ sigunguData, highlightInfo, regionName, isCompact = false }: RegionMapProps) {
     // 시도 바운더리 데이터 상태
     const [boundaryData, setBoundaryData] = useState<SidoBoundaryGeoJson | null>(null);
 
@@ -231,8 +232,8 @@ function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
                 boxZoom={false}
                 keyboard={true}
                 attributionControl={false}
-                minZoom={8}
-                maxZoom={12}
+                minZoom={isCompact ? 6 : 8}
+                maxZoom={isCompact ? 10 : 12}
                 maxBounds={regionBounds}
                 maxBoundsViscosity={0.8}
             >
@@ -251,7 +252,7 @@ function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
                         data={boundaryData}
                         style={{
                             color: '#666666',
-                            weight: 3,
+                            weight: isCompact ? 2 : 3,
                             opacity: 0.7,
                             fill: false
                         }}

@@ -3,6 +3,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import RegionMap from '../../components/RegionMap';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
+import TravelLogSection from '../../components/TravelLogSection';
 import {useLocationContext} from '../../contexts/LocationContext';
 import {SigunguGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
@@ -53,48 +54,58 @@ function RegionDetail() {
         return (
             <LoadingSpinner
                 message="지역 지도 로딩 중..."
-        color="blue"
+                color="blue"
             />
-    );
+        );
     }
 
     if (error) {
         return (
             <ErrorDisplay
                 title="지역 데이터 로드 실패"
-        message={error}
-        onRetry={() => navigate('/region-coloring')}
-        retryText="← 전체 지도로 돌아가기"
+                message={error}
+                onRetry={() => navigate('/region-coloring')}
+                retryText="← 전체 지도로 돌아가기"
             />
-    );
+        );
     }
 
     return (
-        <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white">
+        <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white flex flex-col">
             {/* 지역 상세용 헤더 */}
             <Header type="detail" title={"트래블 로그"} />
 
-            {/* 현재 위치 정보 - 헤더 바로 아래 */}
-            {currentLocation && (
-                <div className="absolute top-18 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm font-medium text-gray-800">
-                            {currentLocation.targetName}
-                        </span>
-                    </div>
-                </div>
-            )}
+            {/* 메인 컨텐츠 영역 - 헤더 아래 */}
+            <div className="pt-16 flex-1 p-4 flex flex-col gap-4">
+                {/* 상단: 지도 영역 (55%) + 현재 위치 정보 */}
+                <div className="relative h-[55%] bg-white border-2 border-[#C9E7CA] rounded-lg overflow-hidden mt-2">
+                    {/* 현재 위치 정보 - 지도 내부 상단 */}
+                    {currentLocation && (
+                        <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                <span className="text-sm font-medium text-gray-800">
+                                    {currentLocation.targetName}
+                                </span>
+                            </div>
+                        </div>
+                    )}
 
-            {/* 지역 지도 */}
-            <div className="pt-16 h-full">
-                {sigunguData && (
-                    <RegionMap
-                        sigunguData={sigunguData}
-                        highlightInfo={currentLocation}
-                        regionName={regionName}
-                    />
-                )}
+                    {/* 지도 */}
+                    {sigunguData && (
+                        <RegionMap
+                            sigunguData={sigunguData}
+                            highlightInfo={currentLocation}
+                            regionName={regionName}
+                            isCompact={true}
+                        />
+                    )}
+                </div>
+
+                {/* 하단: 트래블 로그 영역 (45%) */}
+                <div className="h-[45%]">
+                    <TravelLogSection />
+                </div>
             </div>
         </div>
     );
