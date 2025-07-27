@@ -2,6 +2,7 @@ import {LocationProvider} from './contexts/LocationContext';
 import {Route, Routes} from 'react-router-dom';
 import Home from './pages/home';
 import RegionColoring from './pages/RegionColoring';
+import RegionDetail from './pages/RegionDetails';
 
 function App() {
     return (
@@ -9,6 +10,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/region-coloring" element={<RegionColoring />} />]
+                <Route path="/region/:sidoCode" element={<RegionDetail />} />
             </Routes>
         </LocationProvider>
     );

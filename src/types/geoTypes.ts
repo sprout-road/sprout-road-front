@@ -10,6 +10,8 @@ export interface SidoProperties extends BaseProperties {
     sidoCode: string;
     sidoNameKo: string;
     sidoNameEn: string;
+    "centerLat": number;
+    "centerLng": number;
 }
 
 // ✅ extends BaseProperties 추가
@@ -18,6 +20,8 @@ export interface SigunguProperties extends BaseProperties {
     sigCode: string;
     sigNameKo: string;
     sigNameEn: string;
+    "centerLat": number;
+    "centerLng": number;
 }
 
 export interface GeoJsonFeature<T extends BaseProperties = BaseProperties> {
