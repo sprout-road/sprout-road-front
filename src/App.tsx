@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './page/home'
 import './index.css'
-import RegionColoring from './page/RegionColoring'
+import RegionColoring from './page/RegionColoring/index.tsx'
 
 function App() {
   return (
