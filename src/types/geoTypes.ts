@@ -51,7 +51,7 @@ export interface LocationHighlightResponse {
     highlightType: 'sido' | 'sigungu';
     targetCode: string;
     targetName: string;
-    parentSidoCode?: string; // sigungu 타입일 때만 존재
+    parentSidoCode: string;
     reason: string;
     centerLat: number;
     centerLng: number;
