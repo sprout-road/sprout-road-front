@@ -4,6 +4,7 @@ import Home from './pages/home';
 import Mission from './pages/mission'
 import RegionColoring from './pages/RegionColoring';
 import RegionDetail from './pages/RegionDetails';
+import './index.css';
 
 function App() {
     return (
