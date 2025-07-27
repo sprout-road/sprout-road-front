@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import KoreanMap from '../components/KoreanMap';
+import KoreanMap from '../components/KoreanMap/index.tsx';
 import { SidoGeoJson, LocationHighlightResponse } from '../types/geoTypes';
 import { LocationApiService } from '../services/locationApi';
 
