@@ -261,18 +261,6 @@ function RegionMap({ sigunguData, highlightInfo, regionName }: RegionMapProps) {
                 {/* 지역명 라벨 (지도 확대/축소에 따라 위치 자동 조정) */}
                 <RegionLabels sigunguCenters={sigunguCenters} />
             </MapContainer>
-
-            {/* 현재 위치 표시 (해당 지역에 있을 때만) */}
-            {highlightInfo && (
-                <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm font-medium text-gray-800">
-                            현재 위치: {highlightInfo.targetName}
-                        </span>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

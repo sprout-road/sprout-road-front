@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import KoreanMap from '../../components/KoreanMap/index';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
-import { useLocationContext } from '../../contexts/LocationContext';
-import { SidoGeoJson } from '../../types/geoTypes';
-import { LocationApiService } from '../../services/locationApi';
+import {useLocationContext} from '../../contexts/LocationContext';
+import {SidoGeoJson} from '../../types/geoTypes';
+import {LocationApiService} from '../../services/locationApi';
+import Header from "../../components/Header";
 
 function RegionColoring() {
     const {
@@ -72,25 +73,17 @@ function RegionColoring() {
 
     return (
         <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white">
-            {/* 헤더 */}
-            <div className="absolute top-0 left-0 right-0 z-10 bg-white/90 backdrop-blur-sm shadow-sm">
-                <div className="flex items-center justify-between p-4">
-                    <button
-                        className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                    >
-                        {/* 버튼 내용 */}
-                    </button>
-                </div>
-            </div>
+            {/* 전체 지도용 헤더 */}
+            <Header type="main"/>
 
-            {/* 현재 위치 정보 - 헤더 아래 */}
+            {/* 현재 위치 정보 - 헤더 바로 아래 */}
             {currentLocation && (
-                <div className="absolute top-20 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
+                <div className="absolute top-18 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                         <span className="text-sm font-medium text-gray-800">
-                        현재 위치: {currentLocation.targetName}
-                    </span>
+                            {currentLocation.targetName}
+                        </span>
                     </div>
                 </div>
             )}

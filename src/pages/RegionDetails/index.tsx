@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import RegionMap from '../../components/RegionMap';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
-import { useLocationContext } from '../../contexts/LocationContext';
-import { SigunguGeoJson } from '../../types/geoTypes';
-import { LocationApiService } from '../../services/locationApi';
+import {useLocationContext} from '../../contexts/LocationContext';
+import {SigunguGeoJson} from '../../types/geoTypes';
+import {LocationApiService} from '../../services/locationApi';
+import Header from '../../components/Header';
 
 function RegionDetail() {
     const { sidoCode } = useParams<{ sidoCode: string }>();
@@ -70,39 +71,33 @@ function RegionDetail() {
 
     return (
         <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white">
-            {/* 상단 헤더 */}
-            <div className="absolute top-0 left-0 right-0 z-10 bg-white/90 backdrop-blur-sm shadow-sm">
-    <div className="flex items-center justify-between p-4">
-    <button
-        onClick={() => navigate('/region-coloring')}
-    className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-    >
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-    전체 지도
-    </button>
+            {/* 지역 상세용 헤더 */}
+            <Header type="detail" title={"트래블 로그"} />
 
-    <h1 className="text-lg font-semibold text-gray-800">
-        {regionName || '지역 상세'}
-    </h1>
+            {/* 현재 위치 정보 - 헤더 바로 아래 */}
+            {currentLocation && (
+                <div className="absolute top-18 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
+                    <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-gray-800">
+                            {currentLocation.targetName}
+                        </span>
+                    </div>
+                </div>
+            )}
 
-    <div className="w-20"></div> {/* 균형을 위한 빈 공간 */}
-    </div>
-    </div>
-
-    {/* 지역 지도 */}
-    <div className="pt-16 h-full">
-        {sigunguData && (
-            <RegionMap
-                sigunguData={sigunguData}
-    highlightInfo={currentLocation}
-    regionName={regionName}
-    />
-)}
-    </div>
-    </div>
-);
+            {/* 지역 지도 */}
+            <div className="pt-16 h-full">
+                {sigunguData && (
+                    <RegionMap
+                        sigunguData={sigunguData}
+                        highlightInfo={currentLocation}
+                        regionName={regionName}
+                    />
+                )}
+            </div>
+        </div>
+    );
 }
 
 export default RegionDetail;
