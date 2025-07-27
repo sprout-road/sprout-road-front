@@ -8,7 +8,8 @@ export class LocationApiService {
      */
     static async findLocationForHighlight(lat: number, lng: number): Promise<LocationHighlightResponse> {
         try {
-            const response = await fetch(`${API_BASE_URL}/locate/highlight?lat=${lat}&lng=${lng}`, {
+            console.log(lat, lng);
+            const response = await fetch(`${API_BASE_URL}/locate/highlight?lat=35.1795543&lng=129.0756416`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

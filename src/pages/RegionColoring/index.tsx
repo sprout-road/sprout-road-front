@@ -1,16 +1,38 @@
+import { useEffect, useState } from 'react';
 import KoreanMap from '../../components/KoreanMap/index';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
-import { useLocationData } from './hooks/useLocationData';
+import { useLocationContext } from '../../contexts/LocationContext';
+import { SidoGeoJson } from '../../types/geoTypes';
+import { LocationApiService } from '../../services/locationApi';
 
 function RegionColoring() {
     const {
-        sidoData,
-        highlightInfo,
-        loading,
-        locationLoading,
-        error
-    } = useLocationData();
+        currentLocation,
+        currentSigunguData,
+        isLocationLoading,
+        locationError
+    } = useLocationContext();
+
+    const [sidoData, setSidoData] = useState<SidoGeoJson | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // 시도 데이터 로드 (한 번만)
+    useEffect(() => {
+        const fetchSidoData = async () => {
+            try {
+                const data = await LocationApiService.getAllSido();
+                setSidoData(data);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : '지도 데이터를 불러오는데 실패했습니다.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSidoData();
+    }, []);
 
     // 📱 로딩 상태들
     if (loading) {
@@ -22,7 +44,7 @@ function RegionColoring() {
         );
     }
 
-    if (locationLoading) {
+    if (isLocationLoading) {
         return (
             <LoadingSpinner
                 message="GPS로 현재 위치 확인 중..."
@@ -32,11 +54,11 @@ function RegionColoring() {
         );
     }
 
-    if (error) {
+    if (error || locationError) {
         return (
             <ErrorDisplay
                 title="GPS 위치 확인 실패"
-                message={error}
+                message={error || locationError || '알 수 없는 오류가 발생했습니다.'}
                 onRetry={() => window.location.reload()}
                 helpText={[
                     '💡 GPS 문제 해결 방법:',
@@ -54,7 +76,8 @@ function RegionColoring() {
             {sidoData && (
                 <KoreanMap
                     sidoData={sidoData}
-                    highlightInfo={highlightInfo}
+                    highlightInfo={currentLocation}
+                    sigunguData={currentSigunguData}
                 />
             )}
         </div>

@@ -1,8 +1,7 @@
 import { MapContainer } from 'react-leaflet';
-import { SidoGeoJson, LocationHighlightResponse } from '../../types/geoTypes';
+import { SidoGeoJson, LocationHighlightResponse, SigunguGeoJson } from '../../types/geoTypes';
 import { KOREAN_BOUNDS, MAP_CONFIG } from '../../shared/constants/mapConstants';
 import { useMarkerState } from './hooks/useMarkerState';
-import { useSigunguData } from './hooks/useSigunguData';
 import { useMarkerPosition } from './hooks/useMarkerPosition';
 import MapLayers from './components/MapLayers';
 import MapControls from './components/MapControls';
@@ -11,11 +10,11 @@ import 'leaflet/dist/leaflet.css';
 interface KoreanMapProps {
     sidoData: SidoGeoJson;
     highlightInfo: LocationHighlightResponse | null;
+    sigunguData?: SigunguGeoJson | null; // 선택적으로 전달받을 수 있음
 }
 
-function KoreanMap({ sidoData, highlightInfo }: KoreanMapProps) {
+function KoreanMap({ sidoData, highlightInfo, sigunguData = null }: KoreanMapProps) {
     const { showMarker, toggleMarker } = useMarkerState();
-    const sigunguData = useSigunguData(highlightInfo);
     const markerPosition = useMarkerPosition(highlightInfo);
 
     return (
