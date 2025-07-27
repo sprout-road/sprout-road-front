@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import Header from "../components/common/Header";
 
 type MenuType = '지역 컬러링' | '트레블 로그' | '리워드 보기' | '미션' | '디지털 포트폴리오' | '나만의 여행 기록' 
 // type MenuRoutes = `/region-coloring` | `/travel-log` | `/reword` | `/mission` | `/portfolio` | `/my-travel`
@@ -43,6 +44,7 @@ function Home() {
 
   return (
     <div className="bg-white text-black w-full p-6">
+      <Header isHome={true} ></Header>
       <div className="flex justify-center items-center">
         <div className="grid grid-cols-3 grid-rows-2 gap-4 mt-80 justify-center items-center">
           {menuItems.map((menu, index) => {
