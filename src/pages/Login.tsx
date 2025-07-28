@@ -1,7 +1,7 @@
 function Login() {
     /* 공통 요소 디자인 */
     const inputBaseClasses = "bg-white p-3 border-2 rounded-[8px] border-green-600"
-    const textTagBaseClasses = "transition hover:text-green-300 hover:font-bold"
+    const textTagBaseClasses = "transition text-green-700 hover:border-b"
     const socialButtonBaseClasses = "flex justify-center items-center gap-4 px-3 py-3 rounded-[8px] text-black transition border-2 cursor-pointer duration-400"
     const logoContainerClasses = "w-8 h-8 flex items-center justify-baseline flex-shrink-0"
     const logoImgClasses = "max-w-full max-h-full object-contain"
@@ -11,10 +11,10 @@ function Login() {
     }
 
     return(
-        <div className="p-30">
-            <div className="flex flex-row justify-center items-center mt-10 mb-4">
-                <img src="/logo.png" width={100}/>
-                <span className="text-2xl font-bold">Login</span>
+        <div className="min-h-screen flex flex-col p-6 justify-center">
+            <div className="flex flex-row justify-center items-center mb-6">
+                <img src="/logo.png" width={80}/>
+                <span className="text-2xl font-bold mt-3">Login</span>
             </div>
             <div className="flex flex-col gap-2">
                 <input 
@@ -28,11 +28,11 @@ function Login() {
                     className={inputBaseClasses}
                 />
             </div>
-            <div className="flex gap-2 mt-4">
+            <div className="flex mt-2">
                 <input type="checkbox" />
                 <span>로그인 상태 유지</span>
             </div>
-            <div className="flex mt-10">
+            <div className="flex mt-2">
                 <button 
                     type="submit" 
                     className="flex-1 p-4 rounded-[8px] bg-green-600 text-white transition-colors hover:bg-green-700 cursor-pointer"
@@ -41,14 +41,14 @@ function Login() {
                     로그인
                 </button> 
             </div>
-            <div className="flex justify-between mt-4">
+            <div className="flex justify-between mt-2 mb-4">
                 <span className={textTagBaseClasses}>회원가입</span>
-                <div className="flex gap-4 mb-12">
-                    <a href="/" className={textTagBaseClasses}>아이디 찾기</a> 
-                    <a href="/" className={textTagBaseClasses}> 비밀번호 찾기</a>
+                <div className="flex gap-2">
+                    <a href="/" className={textTagBaseClasses}>아이디찾기</a> 
+                    <a href="/" className={textTagBaseClasses}> 비밀번호찾기</a>
                 </div>
             </div>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
                 <div className={`${socialButtonBaseClasses} hover:border-yellow-200 hover:text-yellow-600`}>
                     <div className={logoContainerClasses}>
                         <img src="/KAKAO_LOGO.png" className={logoImgClasses}/>
