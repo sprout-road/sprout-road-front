@@ -5,7 +5,7 @@ import ErrorDisplay from '../../components/ErrorDisplay';
 import {useLocationContext} from '../../contexts/LocationContext';
 import {SidoGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
-import Header from "../../components/Header";
+import Header from "../../components/common/Header";
 
 function RegionColoring() {
     const {
@@ -74,11 +74,11 @@ function RegionColoring() {
     return (
         <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white">
             {/* 전체 지도용 헤더 */}
-            <Header type="main"/>
+            <Header isHome={true}/>
 
             {/* 현재 위치 정보 - 헤더 바로 아래 */}
             {currentLocation && (
-                <div className="absolute top-18 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
+                <div className="absolute top-14 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                         <span className="text-sm font-medium text-gray-800">

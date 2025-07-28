@@ -7,7 +7,7 @@ import TravelLogSection from '../../components/TravelLogSection';
 import {useLocationContext} from '../../contexts/LocationContext';
 import {SigunguGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
-import Header from '../../components/Header';
+import Header from '../../components/common/Header';
 
 function RegionDetail() {
     const { sidoCode } = useParams<{ sidoCode: string }>();
@@ -18,6 +18,10 @@ function RegionDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [regionName, setRegionName] = useState<string>('');
+
+    const navigateBack = () => {
+        navigate('/region-coloring')
+    }
 
     // 시군구 데이터 로드
     useEffect(() => {
@@ -73,15 +77,15 @@ function RegionDetail() {
     return (
         <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white flex flex-col">
             {/* 지역 상세용 헤더 */}
-            <Header type="detail" title={"트래블 로그"} />
+            <Header onClick={navigateBack}>트레블 로그</Header>
 
             {/* 메인 컨텐츠 영역 - 헤더 아래 */}
-            <div className="pt-16 flex-1 p-4 flex flex-col gap-4">
+            <div className="pt-2 flex-1 p-4 flex flex-col gap-4">
                 {/* 상단: 지도 영역 (55%) + 현재 위치 정보 */}
                 <div className="relative h-[55%] bg-white border-2 border-[#C9E7CA] rounded-lg overflow-hidden mt-2">
                     {/* 현재 위치 정보 - 지도 내부 상단 */}
                     {currentLocation && (
-                        <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
+                        <div className="absolute z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                                 <span className="text-sm font-medium text-gray-800">
