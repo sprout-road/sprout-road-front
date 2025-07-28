@@ -63,7 +63,7 @@ function Mission() {
     }, [])
 
     const handleBackClick = () => {
-        navigate(-1)
+        navigate('/')
     }
 
     const handleToggleComplete = (missionId: number) => {

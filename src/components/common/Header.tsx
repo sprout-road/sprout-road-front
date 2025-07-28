@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom"
 
 interface HeaderProps {
     children?: React.ReactNode
-    isHome: boolean
+    isHome?: boolean
     onClick?: () => void
 }
 
-function Header({ children, isHome, onClick }: HeaderProps) {
+function Header({ children, isHome = false, onClick }: HeaderProps) {
     const navigate = useNavigate()
 
     const handleToggleClick = () => {
@@ -21,7 +21,7 @@ function Header({ children, isHome, onClick }: HeaderProps) {
     }
 
     return (
-        <div className="flex flex-row justify-between min-h-[50px] w-full items-center p-4">
+        <div className="flex flex-row justify-between min-h-[50px] w-full items-center border-b-2">
             {isHome ? (
                 <>
                     <img 
@@ -33,10 +33,10 @@ function Header({ children, isHome, onClick }: HeaderProps) {
                         <input 
                             type="text"
                             placeholder="어디로 갈까?" 
-                            className="border rounded-[20px] px-8 py-2 bg-gray-100 text-center"
+                            className="border rounded-[20px] px-8 py-2 bg-gray-100 text-center max-h-8"
                         />
                         <div 
-                            className="absolute right-3 top-3 transform -translate-y-0 cursor-pointer"
+                            className="absolute right-3 top-2 transform -translate-y-0 cursor-pointer"
                         >
                             <BsSearch size={16} />
                         </div>
