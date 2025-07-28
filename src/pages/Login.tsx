@@ -6,6 +6,9 @@ function Login() {
     const logoContainerClasses = "w-8 h-8 flex items-center justify-baseline flex-shrink-0"
     const logoImgClasses = "max-w-full max-h-full object-contain"
 
+    const onLogin = () => {
+        
+    }
 
     return(
         <div className="p-30">
@@ -30,7 +33,11 @@ function Login() {
                 <span>로그인 상태 유지</span>
             </div>
             <div className="flex mt-10">
-                <button type="submit" className="flex-1 p-4 rounded-[8px] bg-green-600 text-white">
+                <button 
+                    type="submit" 
+                    className="flex-1 p-4 rounded-[8px] bg-green-600 text-white transition-colors hover:bg-green-700 cursor-pointer"
+                    onClick={onLogin}
+                >
                     로그인
                 </button> 
             </div>
@@ -42,19 +49,19 @@ function Login() {
                 </div>
             </div>
             <div className="flex flex-col gap-6">
-                <div className={socialButtonBaseClasses}>
+                <div className={`${socialButtonBaseClasses} hover:border-yellow-200 hover:text-yellow-600`}>
                     <div className={logoContainerClasses}>
                         <img src="/KAKAO_LOGO.png" className={logoImgClasses}/>
                     </div>
                     <span className="font-bold">카카오로 시작하기</span>
                 </div>
-                <div className={socialButtonBaseClasses}>
+                <div className={`${socialButtonBaseClasses} hover:border-green-200 hover:text-green-600`}>
                     <div className={logoContainerClasses}>
                         <img src="/NAVER_LOGO.png" className={logoImgClasses}/>
                     </div>
                     <span className="font-bold">네이버로 시작하기</span>
                 </div>
-                <div className={`${socialButtonBaseClasses} pr-6`}>
+                <div className={`${socialButtonBaseClasses} pr-6 hover:border-gray-200 hover:text-gray-600`}>
                     <div className={logoContainerClasses}>
                         <img src="/GOOGLE_LOGO.png" className={logoImgClasses}/>
                     </div>
