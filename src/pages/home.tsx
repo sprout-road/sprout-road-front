@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router-dom"
 import Header from "../components/common/Header";
+import { useUserInfo } from "../hooks/useUserInfo";
 
-type MenuType = '지역 컬러링' | '트레블 로그' | '리워드 보기' | '미션' | '디지털 포트폴리오' | '나만의 여행 기록' 
-// type MenuRoutes = `/region-coloring` | `/travel-log` | `/reword` | `/mission` | `/portfolio` | `/my-travel`
-
+type MenuType = '지역 컬러링' | '트레블 로그' | '리워드 보기' | '미션' | '디지털 포트폴리오' | '나만의 여행 기록'
 
 function Home() {
   const navigate = useNavigate()
+
+  const { userInfo, loading, error } = useUserInfo();
 
   const menuItems: MenuType[] = [
     '지역 컬러링',
@@ -41,6 +42,10 @@ function Home() {
         return 
     }
   }
+
+  if (loading) return <div className="flex items-center justify-center">유저 정보 가져오는 중...</div>
+
+  console.log(userInfo)
 
   return (
     <div className="bg-white text-black w-full p-6">
