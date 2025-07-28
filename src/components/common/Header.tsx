@@ -25,7 +25,8 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
             {isHome ? (
                 <>
                     <img 
-                        src="/logo.png" width={50} 
+                        src="/logo.png" width={50}
+                        alt="로고" 
                         onClick={handleHomeClick}
                         className="cursor-pointer"
                     />
@@ -44,13 +45,13 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
                 </>
             ) : (
                 <>
-                    <div className="flex cursor-pointer hover:scale-120">
+                    <div className="flex cursor-pointer hover:scale-110">
                         <BsChevronLeft size={24} onClick={onClick} />
                     </div>
                     <div className="flex shrink-0 text-xl">{children}</div>
                 </>
             )}
-            <div className="flex cursor-pointer hover:scale-120">
+            <div className="flex cursor-pointer hover:scale-110">
                 <BsList size={24} onClick={handleToggleClick}/>
             </div>
         </div>

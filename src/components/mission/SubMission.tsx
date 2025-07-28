@@ -10,14 +10,15 @@ interface SubMissionProps {
 function SubMission({ children, id, isComplete, onToggleComplete }: SubMissionProps) {
 
     const handlePlusClick = () => {
-        console.log('미션 상세 모달로 이동')
-        onToggleComplete(id)
+        // console.log('미션 상세 모달로 이동')
+        // onToggleComplete(id)
+        /* todo: 미션 모달로 이동 */ 
     }
 
     return (
         <div  
             className={`
-                flex flex-row items-center justify-between border-y-2 p-4
+                relative flex flex-row items-center justify-between border-y-2 p-4
                 ${isComplete ? 'opacity-60' : ''}
             `}
         >
