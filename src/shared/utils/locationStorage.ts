@@ -1,4 +1,4 @@
-import { LocationHighlightResponse, SigunguGeoJson } from '../../types/geoTypes';
+import { LocationHighlightResponse, SigunguGeoJson, SigunguProperties, SigunguPropertiesCache } from '../../types/geoTypes';
 
 // 🗂️ 로컬 스토리지 키
 const LOCATION_STORAGE_KEY = 'current_user_location';
@@ -10,13 +10,7 @@ export interface StoredLocation {
     accuracy: number;
     timestamp: number;
     locationName: string;
-    highlightInfo: LocationHighlightResponse; // 전체 하이라이트 정보 저장
-}
-
-export interface StoredSigunguData {
-    sidoCode: string;
-    data: SigunguGeoJson;
-    timestamp: number;
+    highlightInfo: LocationHighlightResponse;
 }
 
 // 🗂️ 로컬스토리지에 위치 저장
@@ -33,7 +27,7 @@ export const saveLocationToStorage = (
             accuracy,
             timestamp: Date.now(),
             locationName: highlightInfo.targetName,
-            highlightInfo // 전체 하이라이트 정보 저장
+            highlightInfo
         };
         localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(data));
         console.log('💾 위치 업데이트 저장:', data);
@@ -53,28 +47,34 @@ export const getLocationFromStorage = (): StoredLocation | null => {
     }
 };
 
-// 🗺️ 시군구 데이터 저장
+// 🗺️ 시군구 Properties만 저장 (용량 절약)
 export const saveSigunguDataToStorage = (sidoCode: string, data: SigunguGeoJson): void => {
     try {
-        const cacheData: StoredSigunguData = {
+        // Properties만 추출
+        const propertiesOnly = data.features.map(feature => feature.properties);
+
+        const cacheData: SigunguPropertiesCache = {
             sidoCode,
-            data,
+            properties: propertiesOnly,
             timestamp: Date.now()
         };
+
         localStorage.setItem(SIGUNGU_CACHE_KEY, JSON.stringify(cacheData));
-        console.log('💾 시군구 데이터 저장:', sidoCode);
+        console.log('💾 시군구 Properties 저장:', sidoCode, `${propertiesOnly.length}개`);
     } catch (error) {
         console.error('시군구 데이터 저장 실패:', error);
+        // 용량 초과시 기존 캐시 삭제
+        localStorage.removeItem(SIGUNGU_CACHE_KEY);
     }
 };
 
-// 🗺️ 시군구 데이터 불러오기 (5분 캐시)
-export const getSigunguDataFromStorage = (sidoCode: string): SigunguGeoJson | null => {
+// 🗺️ 시군구 Properties 불러오기 (5분 캐시)
+export const getSigunguDataFromStorage = (sidoCode: string): SigunguProperties[] | null => {
     try {
         const stored = localStorage.getItem(SIGUNGU_CACHE_KEY);
         if (!stored) return null;
 
-        const cacheData: StoredSigunguData = JSON.parse(stored);
+        const cacheData: SigunguPropertiesCache = JSON.parse(stored);
 
         // 다른 시도이거나 5분 경과시 무효
         if (cacheData.sidoCode !== sidoCode ||
@@ -82,8 +82,8 @@ export const getSigunguDataFromStorage = (sidoCode: string): SigunguGeoJson | nu
             return null;
         }
 
-        console.log('📦 캐시된 시군구 데이터 사용:', sidoCode);
-        return cacheData.data;
+        console.log('📦 캐시된 시군구 Properties 사용:', sidoCode, `${cacheData.properties.length}개`);
+        return cacheData.properties;
     } catch (error) {
         console.error('시군구 데이터 읽기 실패:', error);
         return null;

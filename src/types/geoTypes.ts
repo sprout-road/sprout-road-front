@@ -83,3 +83,10 @@ export interface LocationHighlightResponse {
     centerLat: number;
     centerLng: number;
 }
+
+// 캐시용 Properties 타입 추가
+export interface SigunguPropertiesCache {
+    sidoCode: string;
+    properties: SigunguProperties[];
+    timestamp: number;
+}

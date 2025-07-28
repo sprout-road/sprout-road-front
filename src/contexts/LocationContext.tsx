@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
-import {LocationHighlightResponse, SigunguGeoJson} from '../types/geoTypes';
-import {LocationApiService} from '../services/locationApi';
-import {useGeolocation} from '../shared/hooks/useGeolocation';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { LocationHighlightResponse, SigunguGeoJson, SigunguProperties, GeoJsonFeature } from '../types/geoTypes';
+import { LocationApiService } from '../services/locationApi';
+import { useGeolocation } from '../shared/hooks/useGeolocation';
 import {
     getLocationFromStorage,
     getSigunguDataFromStorage,
@@ -14,19 +14,20 @@ import {
 // 5분 = 300,000ms
 const LOCATION_CACHE_DURATION = 5 * 60 * 1000;
 
-interface LocationContextType {
+export interface LocationContextType {
     currentLocation: LocationHighlightResponse | null;
     currentSigunguData: SigunguGeoJson | null;
+    currentSigunguProperties: SigunguProperties[] | null;
     isLocationLoading: boolean;
     locationError: string | null;
     refreshLocation: () => Promise<void>;
-    isLocationStale: boolean; // 위치 정보가 오래되었는지
+    isLocationStale: boolean;
 }
 
-// Context 기본값 정의
 const defaultLocationContext: LocationContextType = {
     currentLocation: null,
     currentSigunguData: null,
+    currentSigunguProperties: null,
     isLocationLoading: false,
     locationError: null,
     refreshLocation: async () => {
@@ -44,6 +45,7 @@ interface LocationProviderProps {
 export function LocationProvider({ children }: LocationProviderProps) {
     const [currentLocation, setCurrentLocation] = useState<LocationHighlightResponse | null>(null);
     const [currentSigunguData, setCurrentSigunguData] = useState<SigunguGeoJson | null>(null);
+    const [currentSigunguProperties, setCurrentSigunguProperties] = useState<SigunguProperties[] | null>(null);
     const [isLocationLoading, setIsLocationLoading] = useState(false);
     const [locationError, setLocationError] = useState<string | null>(null);
     const [isLocationStale, setIsLocationStale] = useState(false);
@@ -79,29 +81,36 @@ export function LocationProvider({ children }: LocationProviderProps) {
     };
 
     // 🗺️ 시군구 데이터 로드 (캐시 우선)
-    const loadSigunguData = async (highlightInfo: LocationHighlightResponse): Promise<SigunguGeoJson | null> => {
+    const loadSigunguData = async (highlightInfo: LocationHighlightResponse): Promise<{
+        geoJson: SigunguGeoJson | null;
+        properties: SigunguProperties[] | null;
+    }> => {
         if (highlightInfo.highlightType !== 'sigungu' || !highlightInfo.parentSidoCode) {
-            return null;
+            return { geoJson: null, properties: null };
         }
 
         try {
-            // 캐시된 데이터 먼저 확인
-            const cachedData = getSigunguDataFromStorage(highlightInfo.parentSidoCode);
-            if (cachedData) {
-                return cachedData;
+            // 캐시된 Properties 먼저 확인
+            const cachedProperties = getSigunguDataFromStorage(highlightInfo.parentSidoCode);
+            if (cachedProperties) {
+                console.log('📦 캐시된 Properties 사용');
+                return { geoJson: null, properties: cachedProperties };
             }
 
             // 캐시 없으면 서버에서 조회
             console.log('🗺️ 시군구 데이터 서버 조회:', highlightInfo.parentSidoCode);
             const data = await LocationApiService.getSigunguBySidoCode(highlightInfo.parentSidoCode);
 
-            // 캐시에 저장
+            // 캐시에 저장 (Properties만)
             saveSigunguDataToStorage(highlightInfo.parentSidoCode, data);
 
-            return data;
-        } catch (error) {
-            console.error('❌ 시군구 데이터 로드 실패:', error);
-            return null;
+            // Properties 추출 - 타입 명시
+            const properties: SigunguProperties[] = data.features.map((feature: GeoJsonFeature<SigunguProperties>) => feature.properties);
+
+            return { geoJson: data, properties };
+        } catch (err) {
+            console.error('❌ 시군구 데이터 로드 실패:', err);
+            return { geoJson: null, properties: null };
         }
     };
 
@@ -124,11 +133,12 @@ export function LocationProvider({ children }: LocationProviderProps) {
             const highlight = await fetchHighlightInfo(gpsLocation.lat, gpsLocation.lng);
 
             // 시군구 데이터도 함께 로드
-            const sigunguData = await loadSigunguData(highlight);
+            const { geoJson, properties } = await loadSigunguData(highlight);
 
             // 상태 업데이트
             setCurrentLocation(highlight);
-            setCurrentSigunguData(sigunguData);
+            setCurrentSigunguData(geoJson);
+            setCurrentSigunguProperties(properties);
 
             // 로컬스토리지 업데이트
             saveLocationToStorage(
@@ -140,10 +150,10 @@ export function LocationProvider({ children }: LocationProviderProps) {
 
             console.log('🎯 위치 정보 갱신 완료:', highlight);
 
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : '위치 조회 실패';
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : '위치 조회 실패';
             setLocationError(errorMessage);
-            console.error('❌ 위치 갱신 실패:', error);
+            console.error('❌ 위치 갱신 실패:', err);
         } finally {
             setIsLocationLoading(false);
         }
@@ -156,10 +166,8 @@ export function LocationProvider({ children }: LocationProviderProps) {
             if (stored && !checkLocationFreshness(stored)) {
                 console.log('⏰ 5분 경과 - 위치 정보 자동 갱신 필요');
                 setIsLocationStale(true);
-                // 자동 갱신하거나 사용자에게 알림 (선택)
-                // refreshLocation(); // 자동 갱신하려면 주석 해제
             }
-        }, 60 * 1000); // 1분마다 체크
+        }, 60 * 1000);
 
         return () => clearInterval(interval);
     }, []);
@@ -170,26 +178,25 @@ export function LocationProvider({ children }: LocationProviderProps) {
             const stored = getLocationFromStorage();
 
             if (stored && checkLocationFreshness(stored)) {
-                // 5분 이내 데이터 있음 → 캐시된 하이라이트 정보 사용
                 try {
                     setIsLocationLoading(true);
 
                     // 저장된 하이라이트 정보 복원
                     setCurrentLocation(stored.highlightInfo);
 
-                    // 시군구 데이터도 복원 (필요시)
-                    const sigunguData = await loadSigunguData(stored.highlightInfo);
-                    setCurrentSigunguData(sigunguData);
+                    // 시군구 데이터도 복원
+                    const { geoJson, properties } = await loadSigunguData(stored.highlightInfo);
+                    setCurrentSigunguData(geoJson);
+                    setCurrentSigunguProperties(properties);
 
                     console.log('📦 캐시된 위치 정보 완전 복원');
-                } catch (error) {
-                    console.log('❌ 캐시된 위치로 조회 실패, 새로 조회');
+                } catch (err) {
+                    console.log('❌ 캐시된 위치로 조회 실패, 새로 조회:', err);
                     await refreshLocation();
                 } finally {
                     setIsLocationLoading(false);
                 }
             } else {
-                // 캐시 없거나 만료됨 → 새로 조회
                 console.log('🔄 위치 정보 없거나 만료됨, 새로 조회');
                 await refreshLocation();
             }
@@ -201,6 +208,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
     const value: LocationContextType = {
         currentLocation,
         currentSigunguData,
+        currentSigunguProperties,
         isLocationLoading,
         locationError,
         refreshLocation,
@@ -214,15 +222,12 @@ export function LocationProvider({ children }: LocationProviderProps) {
     );
 }
 
-// 🪝 커스텀 훅 (명시적 타입 단언)
 export const useLocationContext = (): LocationContextType => {
     const context = useContext(LocationContext);
 
-    // Provider 밖에서 사용했는지 체크
     if (context === defaultLocationContext) {
         throw new Error('useLocationContext must be used within a LocationProvider');
     }
 
-    // TypeScript에게 이게 유효한 context임을 알려줌
     return context as LocationContextType;
 };
