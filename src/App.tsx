@@ -6,6 +6,7 @@ import RegionColoring from './pages/RegionColoring';
 import RegionDetail from './pages/RegionDetails';
 import './index.css';
 import TravelDiary from './pages/TravelDiary';
+import TravelDiaryCreate from './pages/TravelDiary/Create';
 
 function App() {
     return (
@@ -15,7 +16,8 @@ function App() {
                 <Route path="/mission" element={<Mission />} />
                 <Route path="/region-coloring" element={<RegionColoring />} />
                 <Route path="/region/:sidoCode" element={<RegionDetail />} />
-                <Route path="/region/:sidoCode/create-diary" element={<TravelDiary />} />
+                <Route path="/region/:sidoCode/diary/:diaryId" element={<TravelDiary />} />
+                <Route path="/region/:sidoCode/create-diary" element={<TravelDiaryCreate />} />
             </Routes>
         </LocationProvider>
     ); 

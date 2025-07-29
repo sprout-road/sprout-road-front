@@ -10,10 +10,22 @@ const region = {
 }
 
 const travels = [
-    "25년 06월 15일 단양 스카이워크",
-    "25년 06월 16일 단양 시장",
-    "25년 06월 17일 사인암",
-    "25년 06월 23일 도담삼봉",
+    {
+        id: 1,
+        title: "25년 06월 15일 단양 스카이워크" 
+    },
+    {
+        id: 2,
+        title: "25년 06월 16일 단양 시장",
+    },
+    {
+        id: 3,
+        title: "25년 06월 17일 사인암",
+    },
+    {
+        id: 4,
+        title: "25년 06월 23일 도담삼봉",
+    },
 ]
 
 function TravelLogSection() {
@@ -24,7 +36,11 @@ function TravelLogSection() {
     };
 
     const handleAddDiary = () => {
-        navigate('create-diary')
+        navigate('./create-diary')
+    };
+
+    const handleClickDiary = (id: number) => {
+        navigate(`./diary/${id}`)
     };
 
     return (
@@ -45,7 +61,13 @@ function TravelLogSection() {
                 <div>
                     {travels.map((travel) => {
                         return (
-                            <div className="pb-6 font-bold text-md">{travel}</div>
+                            <div 
+                                key={travel.id} 
+                                className="pb-6 font-bold text-md"
+                                onClick={() => handleClickDiary(travel.id)}
+                            >
+                                {travel.title}
+                            </div>
                         )
                     })}
                     <div>

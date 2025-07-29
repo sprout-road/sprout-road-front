@@ -1,6 +1,6 @@
 function TravelDiary() {
     return (
-        <div>gd</div>
+        <div>일지 상세 조회 페이지</div>
     )
 }
 
