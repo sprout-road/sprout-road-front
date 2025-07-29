@@ -6,6 +6,7 @@ import RegionColoring from './pages/RegionColoring';
 import RegionDetail from './pages/RegionDetails';
 import TravelLogEditor from './pages/TravelLogEditor';
 import './index.css';
+import TravelDiary from './pages/TravelDiary';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 <Route path="/region-coloring" element={<RegionColoring />} />
                 <Route path="/region/:sidoCode" element={<RegionDetail />} />
                 <Route path="/travel-log/new" element={<TravelLogEditor />} />
+                <Route path="/region/:sidoCode/create-diary" element={<TravelDiary />} />
             </Routes>
         </LocationProvider>
     );
