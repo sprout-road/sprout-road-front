@@ -49,16 +49,16 @@ function TravelLogSection() {
             style={{ backgroundColor: '#C9E7CA' }}
         >
             {/* TODO: 트래블 로그 작성 및 목록 기능 구현 */}
-            <div className="flex flex-col justify-center items-center text-gray-800 text-center mt-4">
-                <div className="flex flex-row justify-content gap-4">
-                    <h2 className="text-xl font-bold mb-6 px-6 pr-2">{user.name}님의 {region.name} 기록일지</h2>
+            <div className="flex flex-col justify-center items-center text-gray-800 text-center">
+                <div className="flex flex-row justify-content gap-2">
+                    <h2 className="text-xl font-bold mb-4 px-6 pr-2">{user.name}님의 {region.name} 기록일지</h2>
                     <BsPlusCircle 
                         size={25} 
                         className="mt-0.5"
                         onClick={handleAddDiary}
                     />
                 </div>
-                <div>
+                <div className="h-45 overflow-y-scroll scrollbar-hide">
                     {travels.map((travel) => {
                         return (
                             <div 
@@ -70,15 +70,13 @@ function TravelLogSection() {
                             </div>
                         )
                     })}
-                    <div>
-                        <button 
-                            onClick={handleCreatePortfolio}
-                            className="py-2 px-6 rounded-[8px] items-center justify-center text-white bg-green-600"
-                        >
-                            디지털 포트폴리오 만들기
-                        </button>
-                    </div>
                 </div>
+                <button 
+                    onClick={handleCreatePortfolio}
+                    className="mt-1 py-2 px-6 rounded-[8px] items-center justify-center text-white bg-green-600"
+                >
+                    디지털 포트폴리오 만들기
+                </button>
             </div>
         </div>
     );
