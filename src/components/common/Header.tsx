@@ -21,38 +21,48 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
     }
 
     return (
-        <div className="flex flex-row justify-between min-h-[50px] w-full items-center border-b-2">
+        <div className="flex flex-row min-h-12 w-full items-center border-b-2">
             {isHome ? (
                 <>
-                    <img 
-                        src="/logo.png" width={50}
-                        alt="로고" 
-                        onClick={handleHomeClick}
-                        className="cursor-pointer"
-                    />
-                    <div className="relative">
-                        <input 
-                            type="text"
-                            placeholder="어디로 갈까?" 
-                            className="border rounded-[20px] px-8 py-2 bg-gray-100 text-center max-h-8"
+                    <div className="flex-shrink-0">
+                        <img 
+                            src="/logo.png" width={50}
+                            alt="로고" 
+                            onClick={handleHomeClick}
+                            className="cursor-pointer"
                         />
-                        <div 
-                            className="absolute right-3 top-2 transform -translate-y-0 cursor-pointer"
-                        >
-                            <BsSearch size={16} />
+                    </div>
+                    <div className="flex flex-1 justify-center">
+                        <div className="relative max-w-xs w-full">
+                            <input 
+                                type="text"
+                                placeholder="어디로 갈까?" 
+                                className="border rounded-[20px] px-8 py-2 bg-gray-100 text-center max-h-8"
+                            />
+                            <div 
+                                className="absolute right-3 top-2 transform -translate-y-0 cursor-pointer"
+                            >
+                                <BsSearch size={16} />
+                            </div>
                         </div>
                     </div>
                 </>
             ) : (
                 <>
-                    <div className="flex cursor-pointer hover:scale-110">
-                        <BsChevronLeft size={24} onClick={onClick} />
+                    <div className="shrink-0">
+                        <div className="flex cursor-pointer">
+                            <BsChevronLeft size={24} onClick={onClick} />
+                        </div>
                     </div>
-                    <div className="flex shrink-0 text-xl">{children}</div>
+                    <div className="flex flex-1 justify-center flex-nowrap">
+                        <div className="text-xl text-center">{children}</div>
+                    </div>  
                 </>
             )}
-            <div className="flex cursor-pointer hover:scale-110">
-                <BsList size={24} onClick={handleToggleClick}/>
+            <div className="shrink-0">
+                <div className="flex cursor-pointer">
+                    <BsList size={24} onClick={handleToggleClick}/>
+                </div>
             </div>
         </div>
     )
