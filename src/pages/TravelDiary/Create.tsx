@@ -5,24 +5,9 @@ import 'react-quill-new/dist/quill.snow.css';
 import Header from '../../components/common/Header';
 import { useState } from 'react';
 import { LuCalendarMinus2 } from "react-icons/lu";
-import { useNavigate } from 'react-router-dom';
-
-type ContentBlock = {
-    id: string
-    order: number
-    content: {
-        type: "text" | "image"
-        text?: string
-        url?: string
-        caption?: string
-    }
-}
-
-type diaryForm = {
-    title: string
-    visitedAt: string
-    contents: ContentBlock[]
-}
+import { useNavigate, useParams } from 'react-router-dom';
+import { parseTagToBlocks } from '../../helper/parseTagToBlocks';
+import { diaryApi, DiaryForm } from '../../services/diaryApi';
 
 function TravelDiaryCreate() {
     const [date, setDate] = useState<Date | null>(null)
@@ -30,6 +15,8 @@ function TravelDiaryCreate() {
     const [content, setContent] = useState<string>('')
 
     const navigate = useNavigate()
+    const params = useParams();
+    const sigunguCode = params.id;
 
     const handleBackClick = () => {
         navigate(-1)
@@ -53,65 +40,13 @@ function TravelDiaryCreate() {
         'blockquote', 'link', 'image'
     ];
 
-    // HTML 콘텐츠를 API 형태로 파싱하는 함수
-    const parseHtmlToBlocks = (html: string): ContentBlock[] => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const blocks: ContentBlock[] = [];
-        let order = 1;
-
-        // 텍스트와 이미지를 분리해서 블록으로 변환
-        const elements = doc.body.children;
-        
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i];
-            
-            if (element.tagName === 'IMG') {
-                // 이미지 블록
-                const img = element as HTMLImageElement;
-                blocks.push({
-                    id: `block-image-${Date.now()}-${i}`,
-                    order: order++,
-                    content: {
-                        type: "image",
-                        url: img.src,
-                        caption: img.alt || ''
-                    }
-                });
-            } else if (element.textContent?.trim()) {
-                // 텍스트 블록 (p, div, h1-h6 등)
-                blocks.push({
-                    id: `block-text-${Date.now()}-${i}`,
-                    order: order++,
-                    content: {
-                        type: "text",
-                        text: element.outerHTML
-                    }
-                });
-            }
-        }
-
-        // 만약 파싱된 블록이 없다면 전체를 하나의 텍스트 블록으로
-        if (blocks.length === 0 && html.trim()) {
-            blocks.push({
-                id: `block-text-${Date.now()}`,
-                order: 1,
-                content: {
-                    type: "text",
-                    text: html
-                }
-            });
-        }
-
-        return blocks;
-    };
-
-    const transformToApiFormat = (): diaryForm => {
-        const contents = parseHtmlToBlocks(content);
+    const transformToApiFormat = (): DiaryForm => {
+        const contents = parseTagToBlocks(content);
 
         return {
             title: title.trim(),
-            visitedAt: date ? date.toISOString().split('T')[0] : '',
+            sigunguCode: sigunguCode!,
+            traveledAt: date ? date.toISOString().split('T')[0] : '',
             contents: contents
         };
     };
@@ -127,8 +62,7 @@ function TravelDiaryCreate() {
         const apiFormData = transformToApiFormat()
         console.log('API 형태 데이터:', apiFormData)
         
-        // 실제 API 호출
-        // submitDiary(apiFormData)
+        diaryApi.writeDiary(apiFormData)
     }
 
     return (
@@ -162,7 +96,7 @@ function TravelDiaryCreate() {
                                 modules={modules}
                                 formats={formats}
                                 placeholder="여행한 곳에 대해 자유롭게 글과 사진을 남겨보세요"
-                                style={{ height: '100%' }}
+                                style={{ height: '400px' }}
                             />
                         </div>
                         <div className="flex items-center justify-center px-4 mt-16">
@@ -181,3 +115,7 @@ function TravelDiaryCreate() {
 }
 
 export default TravelDiaryCreate
+
+function writeDiary(apiFormData: DiaryForm) {
+    throw new Error('Function not implemented.');
+}

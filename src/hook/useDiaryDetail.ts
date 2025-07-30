@@ -9,7 +9,6 @@ interface DiaryDetailReturn {
 }
 
 type DiaryContent = {
-    type: "text" | "image"
     text?: string 
     url?: string
     caption?: string
@@ -18,6 +17,7 @@ type DiaryContent = {
 export type DiaryContents = {
     id: string
     order: number
+    type: "text" | "image"
     content: DiaryContent
 }
 
