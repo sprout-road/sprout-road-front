@@ -74,6 +74,29 @@ export class diaryApi {
         } catch (error) {
             // api 연동 시 주석 해제
             // throw new Error(error instanceof Error ? error.message : "알 수 없는 오류가 발생!");
+            return {
+                title: "제목",
+                visitedAt: "25년07월17일",
+                contents: [
+                    {
+                        id: "block-1",
+                        order: 1,
+                        content: { 
+                            type: "text",
+                            text: "안녕하세요" 
+                        }
+                    },
+                    {
+                        id: "block-2", 
+                        order: 2,
+                        content: { 
+                            type: "image",
+                            url: "/logo.png",
+                            caption: "이거는 로고입니다.", 
+                        }
+                    }
+                ]
+            }
         }
     }
 
