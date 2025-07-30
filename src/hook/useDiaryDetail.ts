@@ -21,7 +21,7 @@ export type DiaryContents = {
     content: DiaryContent
 }
 
-type DiaryDetail = {
+export type DiaryDetail = {
     title: string
     visitedAt: string
     contents: DiaryContents[]

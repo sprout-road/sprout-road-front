@@ -1,17 +1,11 @@
 import { API_COMMON_URL } from "../constants/constants"
+import { DiaryDetail } from "../hook/useDiaryDetail"
 
-type DiaryContent = {
+type WriteDiaryContent = {
     id: string
     type: string
     order: number
     content: string
-}
-
-interface diaryApiRequest {
-    title: string
-    sigunguCode: number
-    travelAt: string
-    contents: DiaryContent
 }
 
 export interface Diary {
@@ -96,11 +90,11 @@ export class diaryApi {
                         }
                     }
                 ]
-            }
+            } satisfies DiaryDetail
         }
     }
 
-    static async writeDiary(diaryData: DiaryContent) {
+    static async writeDiary(diaryData: WriteDiaryContent) {
         try {
             const response = await fetch(`${API_COMMON_URL}/api/travel-logs`, {
                 method: 'POST',
