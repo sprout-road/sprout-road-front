@@ -108,7 +108,7 @@ function RegionDetail() {
 
                 {/* 하단: 트래블 로그 영역 (45%) */}
                 <div className="h-[45%]">
-                    <TravelLogSection />
+                    <TravelLogSection sigunguCode={sidoCode} region={currentLocation?.targetName.substring(0, 2)} />
                 </div>
             </div>
         </div>
