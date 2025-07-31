@@ -1,37 +1,33 @@
-import { GeoJSON, MapContainer } from 'react-leaflet';
-import { useMemo } from 'react';
-import { Feature, Geometry } from 'geojson';
-import { LocationHighlightResponse, SigunguGeoJson } from '../../types/geoTypes';
+import {GeoJSON, MapContainer} from 'react-leaflet';
+import {useMemo} from 'react';
+import {Feature, Geometry} from 'geojson';
+import {LocationHighlightResponse, RegionGeoJson} from '../../types/geoTypes';
 import RegionLabels from './RegionLabels';
-import { useBoundaryData } from './hooks/useBoundaryData';
-import {
-    calculateRegionBounds,
-    calculateSigunguCenters,
-    getSigunguStyle,
-    getBoundaryStyle
-} from './utils';
-import { createSigunguEventHandler } from './eventHandlers';
-import { MAP_CONFIG } from './constants';
+import {useBoundaryData} from './hooks/useBoundaryData';
+import {calculateRegionBounds, calculateSigunguCenters, getBoundaryStyle, getSigunguStyle} from './utils';
+import {createSigunguEventHandler} from './eventHandlers';
+import {MAP_CONFIG} from './constants';
 import 'leaflet/dist/leaflet.css';
 
 interface RegionMapProps {
-    sigunguData: SigunguGeoJson;
+    regionData: RegionGeoJson;
+    sidoCode: string | undefined;
     highlightInfo: LocationHighlightResponse | null;
     regionName: string;
     isCompact?: boolean;
 }
 
-function RegionMap({ sigunguData, highlightInfo, regionName, isCompact = false }: RegionMapProps) {
+function RegionMap({ regionData, sidoCode, highlightInfo, regionName, isCompact = false }: RegionMapProps) {
     // Custom Hook으로 바운더리 데이터 관리
-    const { boundaryData } = useBoundaryData(sigunguData);
+    const { boundaryData } = useBoundaryData(sidoCode);
 
     // 계산된 값들 (메모이제이션)
     const regionBounds = useMemo(() =>
-        calculateRegionBounds(sigunguData), [sigunguData]
+        calculateRegionBounds(regionData), [regionData]
     );
 
     const sigunguCenters = useMemo(() =>
-        calculateSigunguCenters(sigunguData, highlightInfo), [sigunguData, highlightInfo]
+        calculateSigunguCenters(regionData), [regionData]
     );
 
     // 이벤트 핸들러
@@ -72,7 +68,7 @@ function RegionMap({ sigunguData, highlightInfo, regionName, isCompact = false }
                 {/* 시군구 면 레이어 */}
                 <GeoJSON
                     key={`region-${regionName}`}
-                    data={sigunguData}
+                    data={regionData}
                     style={sigunguStyleFunction}
                     onEachFeature={onEachSigunguFeature}
                 />

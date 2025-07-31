@@ -1,7 +1,7 @@
-import { LatLngBoundsExpression, PathOptions } from 'leaflet';
-import { Feature, Geometry } from 'geojson';
-import { SigunguGeoJson, LocationHighlightResponse } from '../../types/geoTypes';
-import { MAP_CONFIG, STYLE_CONFIG } from './constants';
+import {LatLngBoundsExpression, PathOptions} from 'leaflet';
+import {Feature, Geometry} from 'geojson';
+import {LocationHighlightResponse, RegionGeoJson} from '../../types/geoTypes';
+import {MAP_CONFIG, STYLE_CONFIG} from './constants';
 
 interface Bounds {
     minLat: number;
@@ -39,8 +39,8 @@ export const processCoordinates = (coord: number[], bounds: Bounds): void => {
 };
 
 // 지역 경계 계산
-export const calculateRegionBounds = (sigunguData: SigunguGeoJson): LatLngBoundsExpression => {
-    if (!sigunguData.features || sigunguData.features.length === 0) {
+export const calculateRegionBounds = (regionData: RegionGeoJson): LatLngBoundsExpression => {
+    if (!regionData.features || regionData.features.length === 0) {
         return MAP_CONFIG.DEFAULT_BOUNDS;
     }
 
@@ -51,7 +51,7 @@ export const calculateRegionBounds = (sigunguData: SigunguGeoJson): LatLngBounds
         maxLng: -Infinity
     };
 
-    sigunguData.features.forEach((feature) => {
+    regionData.features.forEach((feature) => {
         if (feature.geometry.type === 'Polygon') {
             feature.geometry.coordinates[0].forEach((coord) => {
                 processCoordinates(coord, bounds);
@@ -78,17 +78,14 @@ export const calculateRegionBounds = (sigunguData: SigunguGeoJson): LatLngBounds
 
 // 시군구 중심점 계산
 export const calculateSigunguCenters = (
-    sigunguData: SigunguGeoJson,
-    highlightInfo: LocationHighlightResponse | null
+    regionData: RegionGeoJson
 ) => {
-    if (!sigunguData.features) return [];
+    if (!regionData.features) return [];
 
-    return sigunguData.features.map((feature) => ({
-        name: feature.properties.sigNameKo,
+    return regionData.features.map((feature) => ({
+        name: feature.properties.regionName,
         lat: feature.properties.centerLat,
-        lng: feature.properties.centerLng,
-        isHighlighted: highlightInfo?.highlightType === 'sigungu' &&
-            feature.properties.sigCode === highlightInfo.targetCode
+        lng: feature.properties.centerLng
     }));
 };
 

@@ -6,7 +6,6 @@ interface RegionLabelsProps {
         name: string;
         lat: number;
         lng: number;
-        isHighlighted: boolean
     }>;
 }
 
@@ -17,7 +16,6 @@ function RegionLabels({ sigunguCenters }: RegionLabelsProps) {
         name: string;
         x: number;
         y: number;
-        isHighlighted: boolean
     }>>([]);
 
     // 지도 이동/줌 시 라벨 위치 업데이트
@@ -28,8 +26,7 @@ function RegionLabels({ sigunguCenters }: RegionLabelsProps) {
                 return {
                     name: center.name,
                     x: point.x,
-                    y: point.y,
-                    isHighlighted: center.isHighlighted
+                    y: point.y
                 };
             });
             setLabels(newLabels);
@@ -63,11 +60,7 @@ function RegionLabels({ sigunguCenters }: RegionLabelsProps) {
                         transform: 'translate(-50%, -50%)'
                     }}
                 >
-                    <div
-                        className={`px-2 py-1 rounded text-[10px] whitespace-nowrap ${
-                            label.isHighlighted ? 'text-red-800 font-bold' : 'text-gray-700'
-                        }`}
-                    >
+                    <div className={`px-2 py-1 rounded text-[10px] whitespace-nowrap ${'text-gray-700'}`}>
                         {label.name}
                     </div>
                 </div>

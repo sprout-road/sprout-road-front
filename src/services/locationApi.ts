@@ -1,6 +1,6 @@
 import { LocationHighlightResponse, SidoBoundaryGeoJson } from '../types/geoTypes';
 
-const API_BASE_URL = 'https://api.deepdivers.store/api/gis';
+const API_BASE_URL = 'http://localhost:8080/api/gis';
 
 export class LocationApiService {
     /**
@@ -44,9 +44,27 @@ export class LocationApiService {
     }
 
     /**
+     * 특정 시도의 지역 정보 GeoJSON 데이터 조회 (면 데이터)
+     */
+    static async getRegionBySidoCode(sidoCode: string) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/regions/${sidoCode}`);
+            console.log("RESPONSE: ", response);
+            if (!response.ok) {
+                throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('시군구 데이터 조회 실패:', error);
+            throw new Error('시군구 데이터를 가져오는데 실패했습니다.');
+        }
+    }
+
+    /**
      * 특정 시도의 바운더리 데이터 조회 (선 데이터)
      */
-    static async getSidoBoundariesBySidoCode(sidoCode: string): Promise<SidoBoundaryGeoJson> {
+    static async getSidoBoundariesBySidoCode(sidoCode: string | unknown): Promise<SidoBoundaryGeoJson> {
         try {
             const response = await fetch(`${API_BASE_URL}/sido/${sidoCode}/boundaries`);
             console.log("SIDO BOUNDARY RESPONSE: ", response);

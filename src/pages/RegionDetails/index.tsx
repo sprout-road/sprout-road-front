@@ -5,7 +5,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
 import TravelLogSection from '../../components/TravelLogSection';
 import {useLocationContext} from '../../contexts/LocationContext';
-import {SigunguGeoJson} from '../../types/geoTypes';
+import {RegionGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
 import Header from '../../components/common/Header';
 
@@ -14,7 +14,7 @@ function RegionDetail() {
     const navigate = useNavigate();
     const { currentLocation } = useLocationContext();
 
-    const [sigunguData, setSigunguData] = useState<SigunguGeoJson | null>(null);
+    const [regionData, setRegionData] = useState<RegionGeoJson | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [regionName, setRegionName] = useState<string>('');
@@ -34,14 +34,15 @@ function RegionDetail() {
 
             try {
                 console.log('🗺️ 지역 상세 데이터 로드:', sidoCode);
-                const data = await LocationApiService.getSigunguBySidoCode(sidoCode);
-                setSigunguData(data);
+                const regionData = await LocationApiService.getRegionBySidoCode(sidoCode);
+                console.log("REGION DATA -----", regionData);
+                setRegionData(regionData);
 
                 // 지역명 추출 (첫 번째 feature에서)
-                if (data.features && data.features.length > 0) {
-                    const firstFeature = data.features[0];
-                    if (firstFeature.properties && firstFeature.properties.sidoNameKo) {
-                        setRegionName(firstFeature.properties.sidoNameKo);
+                if (regionData.features && regionData.features.length > 0) {
+                    const firstFeature = regionData.features[0];
+                    if (firstFeature.properties && firstFeature.properties.regionName) {
+                        setRegionName(firstFeature.properties.regionName);
                     }
                 }
             } catch (err) {
@@ -96,9 +97,10 @@ function RegionDetail() {
                     )}
 
                     {/* 지도 */}
-                    {sigunguData && (
+                    {regionData && (
                         <RegionMap
-                            sigunguData={sigunguData}
+                            regionData={regionData}
+                            sidoCode={sidoCode}
                             highlightInfo={currentLocation}
                             regionName={regionName}
                             isCompact={true}

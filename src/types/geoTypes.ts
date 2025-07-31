@@ -24,6 +24,13 @@ export interface SigunguProperties extends BaseProperties {
     "centerLng": number;
 }
 
+export interface RegionProperties extends BaseProperties {
+    regionCode: string;
+    regionName: string;
+    "centerLat": number;
+    "centerLng": number;
+}
+
 // 면(Polygon) 지오메트리
 export interface PolygonGeometry {
     type: 'MultiPolygon' | 'Polygon';
@@ -69,6 +76,9 @@ export type SidoBoundaryGeoJson = BoundaryFeatureCollection<SidoProperties>;
 
 // 시군구 GeoJSON 타입 (면)
 export type SigunguGeoJson = GeoJsonFeatureCollection<SigunguProperties>;
+
+// 지역 GeoJSON 타입 (면)
+export type RegionGeoJson = GeoJsonFeatureCollection<RegionProperties>;
 
 // 시군구 바운더리 타입 (선) - 삭제 (더 이상 사용 안 함)
 // export type SigunguBoundaryGeoJson = BoundaryFeatureCollection<SigunguProperties>;
