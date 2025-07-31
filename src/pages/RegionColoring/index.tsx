@@ -10,7 +10,6 @@ import Header from "../../components/common/Header";
 function RegionColoring() {
     const {
         currentLocation,
-        currentSigunguData,
         isLocationLoading,
         locationError
     } = useLocationContext();
@@ -82,7 +81,7 @@ function RegionColoring() {
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                         <span className="text-sm font-medium text-gray-800">
-                            {currentLocation.targetName}
+                            {currentLocation.regionName}
                         </span>
                     </div>
                 </div>
@@ -93,7 +92,6 @@ function RegionColoring() {
                 <KoreanMap
                     sidoData={sidoData}
                     highlightInfo={currentLocation}
-                    sigunguData={currentSigunguData}
                 />
             )}
         </div>

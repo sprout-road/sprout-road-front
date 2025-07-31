@@ -1,4 +1,4 @@
-import { LocationHighlightResponse, SidoBoundaryGeoJson } from '../types/geoTypes';
+import {LocationHighlightResponse, LocationResponse, SidoBoundaryGeoJson} from '../types/geoTypes';
 
 const API_BASE_URL = 'http://localhost:8080/api/gis';
 
@@ -9,6 +9,25 @@ export class LocationApiService {
     static async findLocationForHighlight(lat: number, lng: number): Promise<LocationHighlightResponse> {
         try {
             const response = await fetch(`${API_BASE_URL}/locate/highlight?lat=${lat}&lng=${lng}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('위치 하이라이트 정보 조회 실패:', error);
+            throw new Error(error instanceof Error ? error.message : '위치 정보를 가져오는데 실패했습니다.');
+        }
+    }
+
+    static async findLocationV2(lat: number, lng: number): Promise<LocationResponse> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/v2/locate?lat=${lat}&lng=${lng}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

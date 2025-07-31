@@ -1,13 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { LocationHighlightResponse, SigunguGeoJson, SigunguProperties, GeoJsonFeature } from '../types/geoTypes';
+import { LocationResponse } from '../types/geoTypes';
 import { LocationApiService } from '../services/locationApi';
 import { useGeolocation } from '../shared/hooks/useGeolocation';
 import {
     getLocationFromStorage,
-    getSigunguDataFromStorage,
     saveLocationToStorage,
-    saveSigunguDataToStorage,
     StoredLocation
 } from '../shared/utils/locationStorage';
 
@@ -15,9 +13,7 @@ import {
 const LOCATION_CACHE_DURATION = 5 * 60 * 1000;
 
 export interface LocationContextType {
-    currentLocation: LocationHighlightResponse | null;
-    currentSigunguData: SigunguGeoJson | null;
-    currentSigunguProperties: SigunguProperties[] | null;
+    currentLocation: LocationResponse | null;
     isLocationLoading: boolean;
     locationError: string | null;
     refreshLocation: () => Promise<void>;
@@ -26,8 +22,6 @@ export interface LocationContextType {
 
 const defaultLocationContext: LocationContextType = {
     currentLocation: null,
-    currentSigunguData: null,
-    currentSigunguProperties: null,
     isLocationLoading: false,
     locationError: null,
     refreshLocation: async () => {
@@ -43,9 +37,7 @@ interface LocationProviderProps {
 }
 
 export function LocationProvider({ children }: LocationProviderProps) {
-    const [currentLocation, setCurrentLocation] = useState<LocationHighlightResponse | null>(null);
-    const [currentSigunguData, setCurrentSigunguData] = useState<SigunguGeoJson | null>(null);
-    const [currentSigunguProperties, setCurrentSigunguProperties] = useState<SigunguProperties[] | null>(null);
+    const [currentLocation, setCurrentLocation] = useState<LocationResponse | null>(null);
     const [isLocationLoading, setIsLocationLoading] = useState(false);
     const [locationError, setLocationError] = useState<string | null>(null);
     const [isLocationStale, setIsLocationStale] = useState(false);
@@ -68,49 +60,15 @@ export function LocationProvider({ children }: LocationProviderProps) {
         return true;
     };
 
-    // 🎯 서버에서 하이라이트 정보 조회
-    const fetchHighlightInfo = async (lat: number, lng: number): Promise<LocationHighlightResponse> => {
+    // 🎯 서버에서 위치 정보 조회
+    const fetchLocationInfo = async (lat: number, lng: number): Promise<LocationResponse> => {
         try {
-            const highlight = await LocationApiService.findLocationForHighlight(lat, lng);
-            console.log('✅ 하이라이트 정보 조회 성공:', highlight);
-            return highlight;
+            const locationResult = await LocationApiService.findLocationV2(lat, lng);
+            console.log('✅ 위치 정보 조회 성공:', locationResult);
+            return locationResult;
         } catch (err) {
-            console.error('❌ 위치 하이라이트 조회 실패:', err);
+            console.error('❌ 위치 정보 조회 실패:', err);
             throw new Error('위치 정보 조회에 실패했습니다.');
-        }
-    };
-
-    // 🗺️ 시군구 데이터 로드 (캐시 우선)
-    const loadSigunguData = async (highlightInfo: LocationHighlightResponse): Promise<{
-        geoJson: SigunguGeoJson | null;
-        properties: SigunguProperties[] | null;
-    }> => {
-        if (highlightInfo.highlightType !== 'sigungu' || !highlightInfo.parentSidoCode) {
-            return { geoJson: null, properties: null };
-        }
-
-        try {
-            // 캐시된 Properties 먼저 확인
-            const cachedProperties = getSigunguDataFromStorage(highlightInfo.parentSidoCode);
-            if (cachedProperties) {
-                console.log('📦 캐시된 Properties 사용');
-                return { geoJson: null, properties: cachedProperties };
-            }
-
-            // 캐시 없으면 서버에서 조회
-            console.log('🗺️ 시군구 데이터 서버 조회:', highlightInfo.parentSidoCode);
-            const data = await LocationApiService.getSigunguBySidoCode(highlightInfo.parentSidoCode);
-
-            // 캐시에 저장 (Properties만)
-            saveSigunguDataToStorage(highlightInfo.parentSidoCode, data);
-
-            // Properties 추출 - 타입 명시
-            const properties: SigunguProperties[] = data.features.map((feature: GeoJsonFeature<SigunguProperties>) => feature.properties);
-
-            return { geoJson: data, properties };
-        } catch (err) {
-            console.error('❌ 시군구 데이터 로드 실패:', err);
-            return { geoJson: null, properties: null };
         }
     };
 
@@ -129,26 +87,21 @@ export function LocationProvider({ children }: LocationProviderProps) {
             // GPS로 현재 위치 조회
             const gpsLocation = await getCurrentLocation();
 
-            // 서버에서 하이라이트 정보 조회
-            const highlight = await fetchHighlightInfo(gpsLocation.lat, gpsLocation.lng);
-
-            // 시군구 데이터도 함께 로드
-            const { geoJson, properties } = await loadSigunguData(highlight);
+            // 서버에서 위치 정보 조회
+            const locationInfo = await fetchLocationInfo(gpsLocation.lat, gpsLocation.lng);
 
             // 상태 업데이트
-            setCurrentLocation(highlight);
-            setCurrentSigunguData(geoJson);
-            setCurrentSigunguProperties(properties);
+            setCurrentLocation(locationInfo);
 
             // 로컬스토리지 업데이트
             saveLocationToStorage(
                 gpsLocation.lat,
                 gpsLocation.lng,
                 gpsLocation.accuracy,
-                highlight
+                locationInfo
             );
 
-            console.log('🎯 위치 정보 갱신 완료:', highlight);
+            console.log('🎯 위치 정보 갱신 완료:', locationInfo);
 
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : '위치 조회 실패';
@@ -181,15 +134,10 @@ export function LocationProvider({ children }: LocationProviderProps) {
                 try {
                     setIsLocationLoading(true);
 
-                    // 저장된 하이라이트 정보 복원
-                    setCurrentLocation(stored.highlightInfo);
+                    // 저장된 위치 정보 복원
+                    setCurrentLocation(stored.locationInfo);
 
-                    // 시군구 데이터도 복원
-                    const { geoJson, properties } = await loadSigunguData(stored.highlightInfo);
-                    setCurrentSigunguData(geoJson);
-                    setCurrentSigunguProperties(properties);
-
-                    console.log('📦 캐시된 위치 정보 완전 복원');
+                    console.log('📦 캐시된 위치 정보 복원');
                 } catch (err) {
                     console.log('❌ 캐시된 위치로 조회 실패, 새로 조회:', err);
                     await refreshLocation();
@@ -207,8 +155,6 @@ export function LocationProvider({ children }: LocationProviderProps) {
 
     const value: LocationContextType = {
         currentLocation,
-        currentSigunguData,
-        currentSigunguProperties,
         isLocationLoading,
         locationError,
         refreshLocation,

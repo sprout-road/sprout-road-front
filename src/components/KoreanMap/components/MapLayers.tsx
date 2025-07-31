@@ -1,13 +1,12 @@
 import {GeoJSON} from 'react-leaflet';
-import {Layer, LeafletEvent, PathOptions} from 'leaflet';
+import {Layer} from 'leaflet';
 import {useNavigate} from 'react-router-dom';
-import {LocationHighlightResponse, SidoGeoJson, SigunguGeoJson} from '../../../types/geoTypes';
-import {getSidoStyle, getSigunguStyle} from '../../../shared/utils/mapStyles';
+import {LocationResponse, SidoGeoJson} from '../../../types/geoTypes';
+import {getSidoStyle} from '../../../shared/utils/mapStyles';
 
 interface MapLayersProps {
     sidoData: SidoGeoJson;
-    sigunguData: SigunguGeoJson | null;
-    highlightInfo: LocationHighlightResponse | null;
+    location: LocationResponse | null;
 }
 
 interface FeatureProperties {
@@ -22,8 +21,7 @@ interface Feature {
 
 function MapLayers({
                        sidoData,
-                       sigunguData,
-                       highlightInfo,
+                       location,
                    }: MapLayersProps) {
     const navigate = useNavigate();
 
@@ -37,63 +35,17 @@ function MapLayers({
             navigate(`/region/${properties.sidoCode}`);
         });
 
-        // 마우스 오버 효과 (하이라이트되지 않은 경우만)
-        if (!(highlightInfo?.highlightType === 'sido' &&
-            feature.properties.sidoCode === highlightInfo.targetCode)) {
-
-            layer.on('mouseover', (e: LeafletEvent) => {
-                const targetLayer = e.target as Layer & { setStyle: (style: PathOptions) => void };
-                targetLayer.setStyle({
-                    fillColor: '#e3f2fd',
-                    fillOpacity: 0.3
-                });
-            });
-
-            layer.on('mouseout', (e: LeafletEvent) => {
-                const targetLayer = e.target as Layer & { setStyle: (style: PathOptions) => void };
-                targetLayer.setStyle(getSidoStyle(feature, highlightInfo));
-            });
-        }
+        // 필요에 따라 location 정보로 위치 표시 가능
     };
-
-    // ✅ 시군구 피처 이벤트 (정확한 타입 사용)
-
-    const onEachSigunguFeature = (feature: { properties: Record<string, string> }, layer: Layer) => {
-        // 시군구 클릭 이벤트
-        layer.on('click', () => {
-            console.log('클릭한 시군구:', feature.properties);
-
-            // 시군구에서 시도 코드 추출 (sidoCode 또는 sigCode에서 앞 2자리)
-            const sidoCode = feature.properties.sidoCode ||
-                feature.properties.sigCode?.substring(0, 2);
-
-            if (sidoCode) {
-                console.log('시군구에서 추출한 시도 코드:', sidoCode);
-                // 해당 시도의 지역 상세 페이지로 이동
-                navigate(`/region/${sidoCode}`);
-            }
-        });
-    };
-
     return (
         <>
             {/* ✅ 시도 레이어 */}
             <GeoJSON
                 key="sido-layer"
                 data={sidoData}
-                style={(feature) => getSidoStyle(feature, highlightInfo)}
+                style={(feature) => getSidoStyle(feature, location)}
                 onEachFeature={onEachSidoFeature}
             />
-
-            {/* ✅ 시군구 레이어 (타입 맞춤) */}
-            {sigunguData && (
-                <GeoJSON
-                    key="sigungu-layer"
-                    data={sigunguData}
-                    style={(feature) => getSigunguStyle(feature, highlightInfo)}
-                    onEachFeature={onEachSigunguFeature}
-                />
-            )}
         </>
     );
 }

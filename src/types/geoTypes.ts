@@ -84,12 +84,10 @@ export type RegionGeoJson = GeoJsonFeatureCollection<RegionProperties>;
 // export type SigunguBoundaryGeoJson = BoundaryFeatureCollection<SigunguProperties>;
 
 // 서버에서 받을 위치 하이라이트 응답 타입
-export interface LocationHighlightResponse {
-    highlightType: 'sido' | 'sigungu';
-    targetCode: string;
-    targetName: string;
-    parentSidoCode: string;
-    reason: string;
+
+export interface LocationResponse {
+    regionCode: string;
+    regionName: string;
     centerLat: number;
     centerLng: number;
 }
