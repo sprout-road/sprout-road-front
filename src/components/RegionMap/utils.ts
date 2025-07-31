@@ -1,6 +1,6 @@
 import {LatLngBoundsExpression, PathOptions} from 'leaflet';
 import {Feature, Geometry} from 'geojson';
-import {LocationHighlightResponse, RegionGeoJson} from '../../types/geoTypes';
+import {RegionGeoJson} from '../../types/geoTypes';
 import {MAP_CONFIG, STYLE_CONFIG} from './constants';
 
 interface Bounds {
@@ -10,22 +10,25 @@ interface Bounds {
     maxLng: number;
 }
 
-// SigunguFeature를 Feature를 확장하도록 정의
+// 서버에서 받는 실제 데이터 구조에 맞게 수정 (RegionProperties 기반)
 export type SigunguFeature = Feature<Geometry, {
-    sigCode: string;
-    sigNameKo: string;
-    sigNameEn: string;
-    sidoNameKo?: string;
-    centerLat?: number;
-    centerLng?: number;
+    regionCode: string;
+    regionName: string;
+    centerLat: number;
+    centerLng: number;
 }>;
 
-// 타입 가드 함수 - properties가 unknown이므로 안전하게 체크
+// 타입 가드 함수 - RegionProperties 구조에 맞게 수정
 export const isSigunguFeature = (feature: Feature<Geometry, unknown> | undefined): feature is SigunguFeature => {
     if (!feature?.properties) return false;
 
     const props = feature.properties as Record<string, unknown>;
-    return typeof props.sigCode === 'string';
+
+    // RegionProperties에 있는 필드들로 체크
+    return typeof props.regionCode === 'string' &&
+        typeof props.regionName === 'string' &&
+        typeof props.centerLat === 'number' &&
+        typeof props.centerLng === 'number';
 };
 
 // 좌표 처리 헬퍼 함수
@@ -76,32 +79,27 @@ export const calculateRegionBounds = (regionData: RegionGeoJson): LatLngBoundsEx
     ];
 };
 
-// 시군구 중심점 계산
-export const calculateSigunguCenters = (
-    regionData: RegionGeoJson
-) => {
+// 시군구 중심점 계산 - 타입 안전하게 수정
+export const calculateSigunguCenters = (regionData: RegionGeoJson) => {
     if (!regionData.features) return [];
 
-    return regionData.features.map((feature) => ({
-        name: feature.properties.regionName,
-        lat: feature.properties.centerLat,
-        lng: feature.properties.centerLng
-    }));
+    return regionData.features
+        .map((feature) => ({
+            name: feature.properties.regionName,
+            lat: feature.properties.centerLat,
+            lng: feature.properties.centerLng
+        }));
 };
 
 // 시군구 스타일링 (Leaflet 타입과 호환)
 export const getSigunguStyle = (
-    feature: Feature<Geometry, unknown> | undefined,
-    highlightInfo: LocationHighlightResponse | null
+    feature: Feature<Geometry, unknown> | undefined
 ): PathOptions => {
     if (!feature || !isSigunguFeature(feature)) return STYLE_CONFIG.SIGUNGU.DEFAULT;
 
-    const isHighlighted = highlightInfo?.highlightType === 'sigungu' &&
-        feature.properties.sigCode === highlightInfo.targetCode;
-
     return {
         ...STYLE_CONFIG.SIGUNGU.DEFAULT,
-        ...(isHighlighted ? STYLE_CONFIG.SIGUNGU.HIGHLIGHTED : {})
+        className: 'cursor-pointer'
     };
 };
 

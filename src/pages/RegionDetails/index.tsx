@@ -19,9 +19,22 @@ function RegionDetail() {
     const [error, setError] = useState<string | null>(null);
     const [regionName, setRegionName] = useState<string>('');
 
+    // 선택된 시군구 정보 상태
+    const [selectedSigungu, setSelectedSigungu] = useState<{
+        regionCode: string;
+        regionName: string;
+    } | null>(null);
+
     const navigateBack = () => {
         navigate('/region-coloring')
     }
+
+    // 지도에서 시군구 클릭 핸들러 - 디버깅 추가
+    const handleSigunguClick = (regionCode: string, regionName: string) => {
+        console.log('🗺️ RegionDetail에서 시군구 클릭 받음:', { regionCode, regionName });
+        setSelectedSigungu({ regionCode, regionName });
+        console.log('🗺️ selectedSigungu 상태 업데이트:', { regionCode, regionName });
+    };
 
     // 시군구 데이터 로드
     useEffect(() => {
@@ -36,6 +49,12 @@ function RegionDetail() {
                 console.log('🗺️ 지역 상세 데이터 로드:', sidoCode);
                 const regionData = await LocationApiService.getRegionBySidoCode(sidoCode);
                 console.log("REGION DATA -----", regionData);
+
+                // 첫 번째 feature 구조 확인
+                if (regionData.features && regionData.features.length > 0) {
+                    console.log("첫 번째 feature properties:", regionData.features[0].properties);
+                }
+
                 setRegionData(regionData);
 
                 // 지역명 추출 (첫 번째 feature에서)
@@ -54,6 +73,11 @@ function RegionDetail() {
 
         fetchSigunguData();
     }, [sidoCode]);
+
+    // selectedSigungu 상태 변화 감지
+    useEffect(() => {
+        console.log('🗺️ selectedSigungu 상태 변화:', selectedSigungu);
+    }, [selectedSigungu]);
 
     if (loading) {
         return (
@@ -90,7 +114,7 @@ function RegionDetail() {
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                                 <span className="text-sm font-medium text-gray-800">
-                                    {currentLocation.targetName}
+                                    {currentLocation.regionName}
                                 </span>
                             </div>
                         </div>
@@ -101,16 +125,20 @@ function RegionDetail() {
                         <RegionMap
                             regionData={regionData}
                             sidoCode={sidoCode}
-                            highlightInfo={currentLocation}
+                            location={currentLocation}
                             regionName={regionName}
                             isCompact={true}
+                            onSigunguClick={handleSigunguClick}
                         />
                     )}
                 </div>
 
                 {/* 하단: 트래블 로그 영역 (45%) */}
                 <div className="h-[45%]">
-                    <TravelLogSection sigunguCode={sidoCode} region={currentLocation?.targetName.substring(0, 2)} />
+                    <TravelLogSection
+                        sigunguCode={selectedSigungu?.regionCode || ''}
+                        region={selectedSigungu?.regionName || '지역을 선택해주세요'}
+                    />
                 </div>
             </div>
         </div>
