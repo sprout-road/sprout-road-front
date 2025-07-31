@@ -81,7 +81,7 @@ function RegionDetail() {
             <Header onClick={navigateBack}>트레블 로그</Header>
 
             {/* 메인 컨텐츠 영역 - 헤더 아래 */}
-            <div className="pt-2 flex-1 p-4 flex flex-col gap-4">
+            <div className="pt-14 flex-1 p-4 flex flex-col gap-4">
                 {/* 상단: 지도 영역 (55%) + 현재 위치 정보 */}
                 <div className="relative h-[55%] bg-white border-2 border-[#C9E7CA] rounded-lg overflow-hidden mt-2">
                     {/* 현재 위치 정보 - 지도 내부 상단 */}
