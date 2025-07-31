@@ -15,9 +15,9 @@ export interface TravelLog {
 }
 
 export class TravelLogApi {
-    static async getTravelLogList(sigunguCode: string) {
+    static async getTravelLogList() {
         try {
-            const response = await fetch(`${API_COMMON_URL}/api/travel-logs/${sigunguCode}`)
+            const response = await fetch(`${API_COMMON_URL}/api/travel-logs`)
 
             if (!response.ok) {
                 throw new Error(`${response.status} ${response.statusText}`)
@@ -73,7 +73,6 @@ export class TravelLogApi {
                 visitedAt: "25년07월17일",
                 contents: [
                     {
-                        id: "block-1",
                         type:"text",
                         order: 1,
                         content: { 
@@ -81,7 +80,6 @@ export class TravelLogApi {
                         }
                     },
                     {
-                        id: "block-2", 
                         type:"image",
                         order: 2,
                         content: { 
@@ -94,8 +92,29 @@ export class TravelLogApi {
         }
     }
 
-    static async TravelLogImgUpdload() {
+    static async TravelLogImgUpdload(imageFile: File) {
+        try {
+            if (imageFile === undefined || imageFile === null) {
+                console.error("선택된 이미지 파일이 없습니다");
+            }
 
+            const formData = new FormData();
+            formData.append('imageFile', imageFile);
+
+            const response = await fetch(`${API_COMMON_URL}/api/travel-logs/images/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.text();
+            return result;
+        } catch (error) {
+            throw new Error(error instanceof Error ? error.message : "예상치 못한 오류가 발생!");
+        }
     }
 
     static async writeTravelLog(diaryData: TravelLogForm) {

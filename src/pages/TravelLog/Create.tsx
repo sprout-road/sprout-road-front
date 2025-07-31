@@ -37,7 +37,7 @@ function TravelLogCreate() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        if (!date || !title.trim() || !content.trim()) {
+        if (!date || !title.trim() || !content) {
             alert("날짜, 제목, 내용을 모두 입력해주세요")
             return 
         }
@@ -46,6 +46,7 @@ function TravelLogCreate() {
         console.log('API 형태 데이터:', apiFormData)
         
         TravelLogApi.writeTravelLog(apiFormData)
+        navigate(-1)
     }
 
     return (
@@ -76,10 +77,10 @@ function TravelLogCreate() {
                             value={content}
                             onChange={setContent}
                         />
-                        <div className="flex items-center justify-center px-4 mt-16">
+                        <div className="flex items-center justify-center px-4 mt-12">
                             <button 
                                 type="submit"
-                                className="bg-lime-500 text-white rounded-[10px] px-4 py-2 my-10 w-full"
+                                className="bg-lime-500 text-white rounded-[10px] mx-4 px-4 py-2 w-full text-xl"
                             >
                                 작성 완료
                             </button>

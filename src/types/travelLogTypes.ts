@@ -5,9 +5,8 @@ type TravelLogContent = {
 }
 
 export type TravelLogContents = {
-    id: string
-    order: number
     type: "text" | "image"
+    order: number
     content: TravelLogContent
 }
 

@@ -1,20 +1,17 @@
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useRef } from 'react';
-import { LuImage } from 'react-icons/lu';
+import { FaCamera } from "react-icons/fa6";
+import { TravelLogApi } from '../../../services/TravelLogApi';
 
 interface EditorProps {
     value: string;
     onChange: (value: string) => void;
-    placeholder?: string;
-    height?: string;
 }
 
 function TravelLogEditor({ 
     value, 
-    onChange, 
-    placeholder = "내용을 입력해주세요", 
-    height = '400px' 
+    onChange 
 }: EditorProps) {
     const quillRef = useRef<ReactQuill>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,18 +42,25 @@ function TravelLogEditor({
         const file = event.target.files?.[0];
         if (!file) return;
 
-        // TODO: 실제 서버 업로드 로직으로 대체
-        // const imageUrl = await uploadImageToServer(file);
-        
-        // 임시: base64 변환
-        const reader = new FileReader();
-        reader.onload = () => {
-            const imageUrl = reader.result as string;
-            insertImageAtCursor(imageUrl);
-        };
-        reader.readAsDataURL(file);
+        if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 업로드할 수 있습니다.');
+            return;
+        }
 
-        event.target.value = '';
+        const maxSize = 5 * 1024 * 1024; 
+        if (file.size > maxSize) {
+            alert('파일 크기는 5MB 이하여야 합니다.');
+            return;
+        }
+
+        try {
+            const imageUrl = await TravelLogApi.TravelLogImgUpdload(file);
+            insertImageAtCursor(imageUrl);
+        } catch (error) {
+            console.error("이미지 업로드 실패: ", error);
+        } finally {
+            event.target.value = '';
+        }
     };
 
     const insertImageAtCursor = (imageUrl: string) => {
@@ -83,7 +87,6 @@ function TravelLogEditor({
 
     return (
         <div className="w-full">
-            {/* 에디터 */}
             <div className="mt-4 mx-2 my-2" style={{ width: '96%', height: '60%' }}>
                 <ReactQuill
                     ref={quillRef}
@@ -91,24 +94,22 @@ function TravelLogEditor({
                     onChange={onChange}
                     modules={modules}
                     formats={formats}
-                    placeholder={placeholder}
-                    style={{ height }}
+                    placeholder="여행한 곳에 대해 자유롭게 글과 사진을 남겨보세요"
+                    style={{ height: '360px' }}
                 />
             </div>
 
-            {/* 커스텀 이미지 추가 버튼 */}
-            <div className="flex justify-center mt-16 mb-4">
+            <div className="flex flex-row justify-baseline items-center mt-20 mb-4 ml-2 gap-4">
                 <button
                     type="button"
                     onClick={handleImageClick}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg border transition-colors"
+                    className="flex items-center px-2 py-2 bg-white rounded-[8px] border"
                 >
-                    <LuImage size={20} />
-                    <span>이미지 추가</span>
+                    <FaCamera size={16} color='gray' />
                 </button>
+                <span className="text-sm">사진첨부</span>
             </div>
 
-            {/* 숨겨진 파일 input */}
             <input
                 ref={fileInputRef}
                 type="file"
@@ -119,36 +120,5 @@ function TravelLogEditor({
         </div>
     );
 }
-
-// 블록 파싱 유틸리티 함수
-export const parseContentToBlocks = (content: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(content, 'text/html');
-    const blocks: Array<{ type: 'text' | 'image', content: string, timestamp?: string }> = [];
-
-    const traverse = (node: Node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-            const element = node as Element;
-            
-            if (element.tagName === 'IMG') {
-                blocks.push({
-                    type: 'image',
-                    content: element.getAttribute('src') || '',
-                    timestamp: element.getAttribute('data-timestamp') || undefined
-                });
-            } else if (element.tagName === 'P' && element.textContent?.trim()) {
-                blocks.push({
-                    type: 'text',
-                    content: element.innerHTML
-                });
-            } else {
-                Array.from(element.childNodes).forEach(traverse);
-            }
-        }
-    };
-
-    Array.from(doc.body.childNodes).forEach(traverse);
-    return blocks;
-};
 
 export default TravelLogEditor;
