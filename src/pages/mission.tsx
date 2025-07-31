@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom"
 import Header from "../components/common/Header"
-import SubMission from "../components/mission/SubMission"
+import SubMission from "../components/Mission/SubMission"
 import { useEffect, useMemo, useState } from "react"
-import DailyMission, { Status } from "../components/mission/DailyMission"
+import DailyMission, { Status } from "../components/Mission/DailyMission"
 
 interface MissionData {
     id: number

@@ -1,0 +1,1 @@
+export const API_COMMON_URL = 'https://api.deepdivers.store';
