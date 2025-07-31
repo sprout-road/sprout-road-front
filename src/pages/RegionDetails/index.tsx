@@ -3,7 +3,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import RegionMap from '../../components/RegionMap';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
-import TravelLogSection from '../../components/TravelLogSection';
+import TravelLogSection from '../../components/TravelLog/TravelLogSection';
 import {useLocationContext} from '../../contexts/LocationContext';
 import {RegionGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';

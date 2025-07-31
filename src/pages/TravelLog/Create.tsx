@@ -1,13 +1,14 @@
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import Header from '../../components/common/Header';
 import { useState } from 'react';
 import { LuCalendarMinus2 } from "react-icons/lu";
 import { useNavigate, useParams } from 'react-router-dom';
 import { parseTagToBlocks } from '../../helper/parseTagToBlocks';
-import { diaryApi, DiaryForm } from '../../services/diaryApi';
+import { TravelLogApi, TravelLogForm } from '../../services/TravelLogApi';
+import TravelLogEditor from '../../components/TravelLog/TravelLogEditor';
+
 
 function TravelLogCreate() {
     const [date, setDate] = useState<Date | null>(null)
@@ -22,25 +23,7 @@ function TravelLogCreate() {
         navigate(-1)
     }
 
-    // Quill 에디터 모듈 설정
-    const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            ['blockquote'],
-            ['link', 'image']
-        ],
-    };
-
-    const formats = [
-        'header', 'bold', 'italic', 'underline', 'strike',
-        'color', 'background', 'list', 'bullet',
-        'blockquote', 'link', 'image'
-    ];
-
-    const transformToApiFormat = (): DiaryForm => {
+    const transformToApiFormat = (): TravelLogForm => {
         const contents = parseTagToBlocks(content);
 
         return {
@@ -62,7 +45,7 @@ function TravelLogCreate() {
         const apiFormData = transformToApiFormat()
         console.log('API 형태 데이터:', apiFormData)
         
-        diaryApi.writeDiary(apiFormData)
+        TravelLogApi.writeTravelLog(apiFormData)
     }
 
     return (
@@ -89,16 +72,10 @@ function TravelLogCreate() {
                             onChange={(e) => setTitle(e.target.value)}
                             className="mt-4 p-2 border-b focus:outline-0 w-full text-xl font-bold text-black" 
                         />
-                        <div className="mt-4 mx-2 my-2 " style={{ width: '96%', height: '60%' }}>
-                            <ReactQuill
-                                value={content}
-                                onChange={setContent}
-                                modules={modules}
-                                formats={formats}
-                                placeholder="여행한 곳에 대해 자유롭게 글과 사진을 남겨보세요"
-                                style={{ height: '400px' }}
-                            />
-                        </div>
+                        <TravelLogEditor
+                            value={content}
+                            onChange={setContent}
+                        />
                         <div className="flex items-center justify-center px-4 mt-16">
                             <button 
                                 type="submit"

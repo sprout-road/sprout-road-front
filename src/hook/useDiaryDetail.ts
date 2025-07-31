@@ -1,34 +1,16 @@
 import { useEffect, useState } from "react"
-import { diaryApi } from "../services/diaryApi"
+import { TravelLogDetail } from "../types/travelLogTypes"
+import { TravelLogApi } from "../services/TravelLogApi"
 
 interface DiaryDetailReturn {
-    data: DiaryDetail | null
+    data: TravelLogDetail | null
     loading: boolean
     error: string
     refetch: () => void
 }
 
-type DiaryContent = {
-    text?: string 
-    url?: string
-    caption?: string
-}
-
-export type DiaryContents = {
-    id: string
-    order: number
-    type: "text" | "image"
-    content: DiaryContent
-}
-
-export type DiaryDetail = {
-    title: string
-    visitedAt: string
-    contents: DiaryContents[]
-}
-
 export const useDiaryDetail = (logId: number): DiaryDetailReturn => {
-    const [data, setData] = useState<DiaryDetail | null>(null);
+    const [data, setData] = useState<TravelLogDetail | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
 
@@ -37,7 +19,7 @@ export const useDiaryDetail = (logId: number): DiaryDetailReturn => {
         setError('');
 
         try {
-            const result = await diaryApi.getDiaryDetail(logId);
+            const result = await TravelLogApi.getTravelLogDetail(logId);
             setData(result);
         } catch (error) {
             setError(error instanceof Error ? error.message : "데이터를 불러오는 데 실패하였습니다");

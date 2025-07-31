@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react"
-import { Diary, diaryApi } from "../services/diaryApi"
+import { TravelLog, TravelLogApi } from "../services/TravelLogApi"
 
-interface DiaryListReturn {
-    data: Diary[] | null
+interface TravelLogListReturn {
+    data: TravelLog[] | null
     loading: boolean
     error: string
     refetch: () => void
 }
 
-export const useDiaryList = (sigunguCode: string): DiaryListReturn => {
-    const [data, setData] = useState<Diary[] | null>(null);
+export const useDiaryList = (sigunguCode: string): TravelLogListReturn => {
+    const [data, setData] = useState<TravelLog[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
 
@@ -18,7 +18,7 @@ export const useDiaryList = (sigunguCode: string): DiaryListReturn => {
         setError('');
 
         try {
-            const result = await diaryApi.getDiaryList(sigunguCode);
+            const result = await TravelLogApi.getTravelLogList(sigunguCode);
             setData(result);
         } catch (error) {
             setError(error instanceof Error ? error.message : "데이터를 불러오는 데 실패하였습니다");

@@ -1,21 +1,21 @@
 import { API_COMMON_URL } from "../constants/constants"
-import { DiaryContents, DiaryDetail } from "../hook/useDiaryDetail"
+import { TravelLogContents, TravelLogDetail } from "../types/travelLogTypes"
 
-export type DiaryForm = {
+export type TravelLogForm = {
     title: string
     sigunguCode: string
     traveledAt: string
-    contents: DiaryContents[]
+    contents: TravelLogContents[]
 }
 
-export interface Diary {
+export interface TravelLog {
     id: number
     traveledAt: string
     title: string
 }
 
-export class diaryApi {
-    static async getDiaryList(sigunguCode: string) {
+export class TravelLogApi {
+    static async getTravelLogList(sigunguCode: string) {
         try {
             const response = await fetch(`${API_COMMON_URL}/api/travel-logs/${sigunguCode}`)
 
@@ -47,12 +47,12 @@ export class diaryApi {
                     traveledAt: "25년 6월 23일",
                     title: "도담삼봉",
                 },
-            ] satisfies Diary[]
+            ] satisfies TravelLog[]
             // throw new Error(error instanceof Error ? error.message : "알 수 없는 오류가 발생하였습니다.")
         }
     }
 
-    static async getDiaryDetail(id: number | undefined) {
+    static async getTravelLogDetail(id: number | undefined) {
         try {
             if (id === undefined) {
                 console.error("유효하지 않은 id 입니다.")
@@ -90,11 +90,15 @@ export class diaryApi {
                         }
                     }
                 ]
-            } satisfies DiaryDetail
+            } satisfies TravelLogDetail
         }
     }
 
-    static async writeDiary(diaryData: DiaryForm) {
+    static async TravelLogImgUpdload() {
+
+    }
+
+    static async writeTravelLog(diaryData: TravelLogForm) {
         try {
             const response = await fetch(`${API_COMMON_URL}/api/travel-logs`, {
                 method: 'POST',
