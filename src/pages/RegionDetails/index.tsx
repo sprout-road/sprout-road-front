@@ -5,7 +5,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
 import TravelLogSection from '../../components/TravelLogSection';
 import {useLocationContext} from '../../contexts/LocationContext';
-import {SigunguGeoJson} from '../../types/geoTypes';
+import {RegionGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
 import Header from '../../components/common/Header';
 
@@ -14,14 +14,27 @@ function RegionDetail() {
     const navigate = useNavigate();
     const { currentLocation } = useLocationContext();
 
-    const [sigunguData, setSigunguData] = useState<SigunguGeoJson | null>(null);
+    const [regionData, setRegionData] = useState<RegionGeoJson | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [regionName, setRegionName] = useState<string>('');
 
+    // 선택된 시군구 정보 상태
+    const [selectedSigungu, setSelectedSigungu] = useState<{
+        regionCode: string;
+        regionName: string;
+    } | null>(null);
+
     const navigateBack = () => {
         navigate('/region-coloring')
     }
+
+    // 지도에서 시군구 클릭 핸들러 - 디버깅 추가
+    const handleSigunguClick = (regionCode: string, regionName: string) => {
+        console.log('🗺️ RegionDetail에서 시군구 클릭 받음:', { regionCode, regionName });
+        setSelectedSigungu({ regionCode, regionName });
+        console.log('🗺️ selectedSigungu 상태 업데이트:', { regionCode, regionName });
+    };
 
     // 시군구 데이터 로드
     useEffect(() => {
@@ -34,14 +47,21 @@ function RegionDetail() {
 
             try {
                 console.log('🗺️ 지역 상세 데이터 로드:', sidoCode);
-                const data = await LocationApiService.getSigunguBySidoCode(sidoCode);
-                setSigunguData(data);
+                const regionData = await LocationApiService.getRegionBySidoCode(sidoCode);
+                console.log("REGION DATA -----", regionData);
+
+                // 첫 번째 feature 구조 확인
+                if (regionData.features && regionData.features.length > 0) {
+                    console.log("첫 번째 feature properties:", regionData.features[0].properties);
+                }
+
+                setRegionData(regionData);
 
                 // 지역명 추출 (첫 번째 feature에서)
-                if (data.features && data.features.length > 0) {
-                    const firstFeature = data.features[0];
-                    if (firstFeature.properties && firstFeature.properties.sidoNameKo) {
-                        setRegionName(firstFeature.properties.sidoNameKo);
+                if (regionData.features && regionData.features.length > 0) {
+                    const firstFeature = regionData.features[0];
+                    if (firstFeature.properties && firstFeature.properties.regionName) {
+                        setRegionName(firstFeature.properties.regionName);
                     }
                 }
             } catch (err) {
@@ -53,6 +73,11 @@ function RegionDetail() {
 
         fetchSigunguData();
     }, [sidoCode]);
+
+    // selectedSigungu 상태 변화 감지
+    useEffect(() => {
+        console.log('🗺️ selectedSigungu 상태 변화:', selectedSigungu);
+    }, [selectedSigungu]);
 
     if (loading) {
         return (
@@ -80,7 +105,7 @@ function RegionDetail() {
             <Header onClick={navigateBack}>트레블 로그</Header>
 
             {/* 메인 컨텐츠 영역 - 헤더 아래 */}
-            <div className="pt-2 flex-1 p-4 flex flex-col gap-4">
+            <div className="pt-14 flex-1 p-4 flex flex-col gap-4">
                 {/* 상단: 지도 영역 (55%) + 현재 위치 정보 */}
                 <div className="relative h-[55%] bg-white border-2 border-[#C9E7CA] rounded-lg overflow-hidden mt-2">
                     {/* 현재 위치 정보 - 지도 내부 상단 */}
@@ -89,26 +114,31 @@ function RegionDetail() {
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                                 <span className="text-sm font-medium text-gray-800">
-                                    {currentLocation.targetName}
+                                    {currentLocation.regionName}
                                 </span>
                             </div>
                         </div>
                     )}
 
                     {/* 지도 */}
-                    {sigunguData && (
+                    {regionData && (
                         <RegionMap
-                            sigunguData={sigunguData}
-                            highlightInfo={currentLocation}
+                            regionData={regionData}
+                            sidoCode={sidoCode}
+                            location={currentLocation}
                             regionName={regionName}
                             isCompact={true}
+                            onSigunguClick={handleSigunguClick}
                         />
                     )}
                 </div>
 
                 {/* 하단: 트래블 로그 영역 (45%) */}
                 <div className="h-[45%]">
-                    <TravelLogSection sigunguCode={sidoCode} region={currentLocation?.targetName.substring(0, 2)} />
+                    <TravelLogSection
+                        sigunguCode={selectedSigungu?.regionCode || ''}
+                        region={selectedSigungu?.regionName || '지역을 선택해주세요'}
+                    />
                 </div>
             </div>
         </div>

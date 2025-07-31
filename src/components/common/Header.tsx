@@ -21,7 +21,7 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
     }
 
     return (
-        <div className="flex flex-row min-h-12 w-full items-center border-b-2">
+        <div className="flex flex-row min-h-12 w-full z-20 absolute items-center border-b-2">
             {isHome ? (
                 <>
                     <div className="flex-shrink-0">
