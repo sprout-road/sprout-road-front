@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { parseTagToBlocks } from '../../helper/parseTagToBlocks';
 import { diaryApi, DiaryForm } from '../../services/diaryApi';
 
-function TravelDiaryCreate() {
+function TravelLogCreate() {
     const [date, setDate] = useState<Date | null>(null)
     const [title, setTitle] = useState<string>('')
     const [content, setContent] = useState<string>('')
@@ -114,8 +114,4 @@ function TravelDiaryCreate() {
     )
 }
 
-export default TravelDiaryCreate
-
-function writeDiary(apiFormData: DiaryForm) {
-    throw new Error('Function not implemented.');
-}
+export default TravelLogCreate

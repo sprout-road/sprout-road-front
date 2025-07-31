@@ -67,11 +67,11 @@ function TravelLogSection({ sigunguCode, region }: TravelLogSectionProps) {
     };
 
     const handleAddDiary = () => {
-        navigate('./create-diary');
+        navigate('/create-diary')
     };
 
     const handleClickDiary = (id: number) => {
-        navigate(`./diary/${id}`);
+        navigate(`/travel-log/${id}`)
     };
 
     if (loading) {

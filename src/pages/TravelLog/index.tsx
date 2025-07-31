@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ErrorComponent from "../../components/common/Error"
 import Header from "../../components/common/Header";
 import LoadingSpinner from "../../components/LoadingSpinner"
@@ -6,7 +6,9 @@ import { useDiaryDetail } from "../../hook/useDiaryDetail"
 
 type Weather = "SUNNY" | "RAINY" | "SNOW" | "CLOUDY";
 
-function TravelDiary(logId: number) {
+function TravelLogDetail() {
+    const param = useParams();
+    const logId = parseInt(param.diaryId!);
     const {data: diaryDetail, loading, error, refetch} = useDiaryDetail(logId);
     const navigate = useNavigate();
 
@@ -56,7 +58,7 @@ function TravelDiary(logId: number) {
             </div>
             <div className="mx-8 flex flex-col">
                 {diaryDetail.contents.map((c) => {
-                    return c.content.type === "text" ? (
+                    return c.type === "text" ? (
                         <p className="p-2">{c.content.text}</p>
                     ) : (
                         <div
@@ -75,4 +77,4 @@ function TravelDiary(logId: number) {
     )
 }
 
-export default TravelDiary
+export default TravelLogDetail
