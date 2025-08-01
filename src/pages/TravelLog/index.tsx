@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ErrorComponent from "../../components/common/Error"
 import Header from "../../components/common/Header";
 import LoadingSpinner from "../../components/LoadingSpinner"
-import { useDiaryDetail } from "../../hook/useDiaryDetail"
+import { useDiaryDetail } from "../../hooks/useDiaryDetail"
 
 type Weather = "SUNNY" | "RAINY" | "SNOW" | "CLOUDY";
 
@@ -28,7 +28,7 @@ function TravelLogDetail() {
     }
 
     const handleBackClick = () => {
-        navigate(-1);
+        navigate('/main');
     }
 
     if (loading) {
@@ -38,7 +38,7 @@ function TravelLogDetail() {
     }
 
     if (error || diaryDetail === null) {
-        return (
+        return (    
             <ErrorComponent error={error} refetch={refetch}/>
         )
     }
