@@ -3,7 +3,10 @@ import Header from "../components/common/Header";
 import { useUserInfo } from "../hooks/useUserInfo";
 import ErrorComponent from "../components/common/Error";
 
-type MenuType = '리워드 보기' | '오늘의 미션' | '트레블 로그' | '포트폴리오' | '리워드 상점' 
+type MenuType = {
+  name: string
+  description: string
+}
 
 function Home() {
   const navigate = useNavigate()
@@ -15,11 +18,26 @@ function Home() {
   }
 
   const menuItems: MenuType[] = [
-    '리워드 보기',
-    '오늘의 미션',
-    '트레블 로그',
-    '포트폴리오',
-    '리워드 상점'
+    {
+      name: '리워드 보기',
+      description: '현재까지 \n획득한 뱃지를\n 확인해보세요!',
+    },
+    {
+      name: '오늘의 미션',
+      description: '오늘의 미션을\n 수행하고 보상을\n 받아주세요!',
+    },
+    {
+      name: '트레블 로그',
+      description: '다녀온 장소에\n 대한 기록을\n 남겨보세요!',
+    },
+    {
+      name: '포트폴리오',
+      description: '내가 다녀온\n 기록들을 한눈에\n 볼 수 있어요!',
+    },
+    {
+      name:'리워드 상점',
+      description: '보유한 리워드를\n 다양한 상품으로\n 교환할 수 있어요!'
+    }
   ] as const;
 
   const handleMenuClick = (index: number) => {
@@ -85,30 +103,32 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-center mt-16">
+        <div className="flex items-center justify-center mt-8">
           <div className="grid grid-cols-3 grid-rows-2 gap-2 w-full max-w-lg mx-2">
             {menuItems.map((menu, index) => {
               return (
                 <div
                   key={index}
                   onClick={() => handleMenuClick(index)}
-                  className="flex flex-col row flex-nowrap text-center py-2 min-w-[100px]" 
+                  className="flex flex-col row flex-nowrap py-2 min-w-[100px]" 
                 >
                   <div className="bg-green-200 rounded-[8px]">
                     <img src={mappingImg(index)} alt={`menu-${index + 1}`} className="w-50 h-25 object-contain"/>
                   </div>
-                  <div className="flex flex-nowrap justify-center">
-                    <p className="py-2 text-xs font-bold">{menu}</p>
+                  <div className="flex flex-col">
+                    <p className="py-2 text-md font-bold text-center">{menu.name}</p>
+                    <p className="text-xs text-center text-gray-500 whitespace-pre-line">{menu.description}</p>
                   </div> 
                 </div>
               )
             })}
-            <div className="flex flex-col items-center text-center mt-2">
+            <div className="flex flex-col mt-2">
               <div className="bg-green-200 rounded-lg h-25 w-full">
                 <img src="/menu/preparing-service.png" className="w-full h-full p-2 object-contain rounded-lg" alt="준비 중 메뉴" />
               </div>
-              <div className="flex justify-center mt-2">
-                <p className="text-xs font-bold">준비 중인 서비스</p>
+              <div className="flex flex-col mt-2 text-center justify-center">
+                <p className="text-md font-bold">준비 중...</p>
+                <p className="text-xs text-gray-500 mt-2">새로운 서비스를<br/>만나보아요!</p>
               </div>
             </div>
           </div>
