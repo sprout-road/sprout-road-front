@@ -26,7 +26,7 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
                 <>
                     <div className="flex-shrink-0">
                         <img 
-                            src="/logo.png" width={50}
+                            src="/logo/logo.png" width={50}
                             alt="로고" 
                             onClick={handleHomeClick}
                             className="cursor-pointer"

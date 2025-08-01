@@ -74,7 +74,7 @@ function Login() {
                     onClick={onLogin}
                 >
                     <div className={logoContainerClasses}>
-                        <img src="/KAKAO_LOGO.png" className={logoImgClasses}/>
+                        <img src="/logo/KAKAO_LOGO.png" className={logoImgClasses}/>
                     </div>
                     <span className="font-bold">카카오로 시작하기</span>
                 </div>
@@ -83,7 +83,7 @@ function Login() {
                     onClick={onLogin}
                 >
                     <div className={logoContainerClasses}>
-                        <img src="/NAVER_LOGO.png" className={logoImgClasses}/>
+                        <img src="/logo/NAVER_LOGO.png" className={logoImgClasses}/>
                     </div>
                     <span className="font-bold">네이버로 시작하기</span>
                 </div>
@@ -92,7 +92,7 @@ function Login() {
                     onClick={onLogin}
                 >
                     <div className={logoContainerClasses}>
-                        <img src="/GOOGLE_LOGO.png" className={logoImgClasses}/>
+                        <img src="/logo/GOOGLE_LOGO.png" className={logoImgClasses}/>
                     </div>
                     <span className="font-bold mx-2">구글로 시작하기</span>
                 </div>
