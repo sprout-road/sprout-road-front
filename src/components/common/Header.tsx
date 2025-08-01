@@ -17,11 +17,11 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
     }
 
     const handleHomeClick = () => {
-        navigate('/')
+        navigate('/main')
     }
 
     return (
-        <div className="flex flex-row min-h-12 w-full z-20 absolute items-center border-b-2">
+        <div className="flex flex-row min-h-12 w-full items-center border-b-2 p-2 gap-2">
             {isHome ? (
                 <>
                     <div className="flex-shrink-0">
@@ -33,16 +33,16 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
                         />
                     </div>
                     <div className="flex flex-1 justify-center">
-                        <div className="relative max-w-xs w-full">
+                        <div className="relative w-full">
                             <input 
                                 type="text"
                                 placeholder="어디로 갈까?" 
-                                className="border rounded-[20px] px-8 py-2 bg-gray-100 text-center max-h-8"
+                                className="w-full border rounded-[20px] px-8 py-2 bg-gray-100 text-center"
                             />
-                            <div 
-                                className="absolute right-3 top-2 transform -translate-y-0 cursor-pointer"
+                            <div
+                                className="absolute right-3 top-3 transform"
                             >
-                                <BsSearch size={16} />
+                                <BsSearch size={16} className="shrink-0"/>
                             </div>
                         </div>
                     </div>
