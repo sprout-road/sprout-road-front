@@ -43,7 +43,7 @@ function Home() {
   const handleMenuClick = (index: number) => {
     switch(index) {
       case 0:
-        navigate(`/reword`)
+        navigate(`/reward`)
         return
       case 1:
         navigate(`/mission`)
@@ -55,7 +55,7 @@ function Home() {
         navigate(`/portfolio`)
         return
       case 4:
-        navigate(`/reword-shop`)
+        navigate(`/reward-shop`)
         return
       default:
         return 
@@ -65,7 +65,7 @@ function Home() {
   const mappingImg = (index: number) => {
     switch(index) {
       case 0:
-        return "/menu/reword.png"
+        return "/menu/reward.png"
       case 1:
         return "/menu/daily-mission.png"
       case 2:
@@ -73,7 +73,7 @@ function Home() {
       case 3:
         return "/menu/portfolio.png"
       case 4:
-        return "/menu/reword-shop.png"
+        return "/menu/reward-shop.png"
       case 5:
         return "/menu/preparing-service.png"
     }
