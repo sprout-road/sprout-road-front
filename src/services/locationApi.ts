@@ -1,6 +1,6 @@
 import {LocationResponse, SidoBoundaryGeoJson} from '../types/geoTypes';
 
-const API_BASE_URL = 'http://localhost:8080/api/gis';
+const API_BASE_URL = 'https://api.deepdivers.store/api/gis';
 
 export class LocationApiService {
     /**

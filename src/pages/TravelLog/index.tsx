@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ErrorComponent from "../../components/common/Error"
 import Header from "../../components/common/Header";
 import LoadingSpinner from "../../components/LoadingSpinner"
@@ -6,7 +6,9 @@ import { useDiaryDetail } from "../../hook/useDiaryDetail"
 
 type Weather = "SUNNY" | "RAINY" | "SNOW" | "CLOUDY";
 
-function TravelDiary(logId: number) {
+function TravelLogDetail() {
+    const param = useParams();
+    const logId = parseInt(param.diaryId!);
     const {data: diaryDetail, loading, error, refetch} = useDiaryDetail(logId);
     const navigate = useNavigate();
 
@@ -43,7 +45,9 @@ function TravelDiary(logId: number) {
 
     return (
         <div>
-            <Header onClick={handleBackClick}>트레블 로그</Header>
+            <div className="flex">
+                <Header onClick={handleBackClick}>트레블 로그</Header>
+            </div>
             <div className="relative bg-lime-600 text-white font-bold mx-6 mt-4 rounded-[10px]">
                 <div className="flex flex-col">
                     <p className="p-2">{diaryDetail.visitedAt}</p>
@@ -56,11 +60,11 @@ function TravelDiary(logId: number) {
             </div>
             <div className="mx-8 flex flex-col">
                 {diaryDetail.contents.map((c) => {
-                    return c.content.type === "text" ? (
+                    return c.type === "text" ? (
                         <p className="p-2">{c.content.text}</p>
                     ) : (
                         <div
-                            key={c.id}
+                            key={c.order}
                             className="flex flex-col"
                         >
                             <div className="flex justify-center">
@@ -75,4 +79,4 @@ function TravelDiary(logId: number) {
     )
 }
 
-export default TravelDiary
+export default TravelLogDetail

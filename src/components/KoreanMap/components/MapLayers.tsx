@@ -1,12 +1,11 @@
 import {GeoJSON} from 'react-leaflet';
 import {Layer} from 'leaflet';
 import {useNavigate} from 'react-router-dom';
-import {LocationResponse, SidoGeoJson} from '../../../types/geoTypes';
+import {SidoGeoJson} from '../../../types/geoTypes';
 import {getSidoStyle} from '../../../shared/utils/mapStyles';
 
 interface MapLayersProps {
     sidoData: SidoGeoJson;
-    location: LocationResponse | null;
 }
 
 interface FeatureProperties {
@@ -20,8 +19,7 @@ interface Feature {
 }
 
 function MapLayers({
-                       sidoData,
-                       location,
+                       sidoData
                    }: MapLayersProps) {
     const navigate = useNavigate();
 
@@ -43,7 +41,7 @@ function MapLayers({
             <GeoJSON
                 key="sido-layer"
                 data={sidoData}
-                style={(feature) => getSidoStyle(feature, location)}
+                style={(feature) => getSidoStyle(feature)}
                 onEachFeature={onEachSidoFeature}
             />
         </>

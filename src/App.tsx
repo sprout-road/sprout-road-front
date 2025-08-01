@@ -5,9 +5,9 @@ import Mission from './pages/mission'
 import RegionColoring from './pages/RegionColoring';
 import RegionDetail from './pages/RegionDetails';
 import './index.css';
-import TravelDiaryCreate from './pages/TravelDiary/Create';
 import Login from './pages/Login';
-
+import TravelLogDetail from './pages/TravelLog';
+import TravelLogCreate from './pages/TravelLog/Create';
 
 function App() {
     return (
@@ -18,7 +18,8 @@ function App() {
                 <Route path="/mission" element={<Mission />} />
                 <Route path="/region-coloring" element={<RegionColoring />} />
                 <Route path="/region/:sidoCode" element={<RegionDetail />} />
-                <Route path="/region/:sidoCode/create-diary" element={<TravelDiaryCreate />} />
+                <Route path="/travel-log/:diaryId" element={<TravelLogDetail />} />
+                <Route path="/create-diary" element={<TravelLogCreate />} />
             </Routes>
         </LocationProvider>
     );

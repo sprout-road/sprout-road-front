@@ -1,15 +1,16 @@
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import Header from '../../components/common/Header';
 import { useState } from 'react';
 import { LuCalendarMinus2 } from "react-icons/lu";
 import { useNavigate, useParams } from 'react-router-dom';
 import { parseTagToBlocks } from '../../helper/parseTagToBlocks';
-import { diaryApi, DiaryForm } from '../../services/diaryApi';
+import { TravelLogApi, TravelLogForm } from '../../services/TravelLogApi';
+import TravelLogEditor from '../../components/TravelLog/TravelLogEditor';
 
-function TravelDiaryCreate() {
+
+function TravelLogCreate() {
     const [date, setDate] = useState<Date | null>(null)
     const [title, setTitle] = useState<string>('')
     const [content, setContent] = useState<string>('')
@@ -22,25 +23,7 @@ function TravelDiaryCreate() {
         navigate(-1)
     }
 
-    // Quill 에디터 모듈 설정
-    const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            ['blockquote'],
-            ['link', 'image']
-        ],
-    };
-
-    const formats = [
-        'header', 'bold', 'italic', 'underline', 'strike',
-        'color', 'background', 'list', 'bullet',
-        'blockquote', 'link', 'image'
-    ];
-
-    const transformToApiFormat = (): DiaryForm => {
+    const transformToApiFormat = (): TravelLogForm => {
         const contents = parseTagToBlocks(content);
 
         return {
@@ -54,7 +37,7 @@ function TravelDiaryCreate() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        if (!date || !title.trim() || !content.trim()) {
+        if (!date || !title.trim() || !content) {
             alert("날짜, 제목, 내용을 모두 입력해주세요")
             return 
         }
@@ -62,7 +45,8 @@ function TravelDiaryCreate() {
         const apiFormData = transformToApiFormat()
         console.log('API 형태 데이터:', apiFormData)
         
-        diaryApi.writeDiary(apiFormData)
+        TravelLogApi.writeTravelLog(apiFormData)
+        navigate(-1)
     }
 
     return (
@@ -89,20 +73,14 @@ function TravelDiaryCreate() {
                             onChange={(e) => setTitle(e.target.value)}
                             className="mt-4 p-2 border-b focus:outline-0 w-full text-xl font-bold text-black" 
                         />
-                        <div className="mt-4 mx-2 my-2 " style={{ width: '96%', height: '60%' }}>
-                            <ReactQuill
-                                value={content}
-                                onChange={setContent}
-                                modules={modules}
-                                formats={formats}
-                                placeholder="여행한 곳에 대해 자유롭게 글과 사진을 남겨보세요"
-                                style={{ height: '400px' }}
-                            />
-                        </div>
-                        <div className="flex items-center justify-center px-4 mt-16">
+                        <TravelLogEditor
+                            value={content}
+                            onChange={setContent}
+                        />
+                        <div className="flex items-center justify-center px-4 mt-12">
                             <button 
                                 type="submit"
-                                className="bg-lime-500 text-white rounded-[10px] px-4 py-2 my-10 w-full"
+                                className="bg-lime-500 text-white rounded-[10px] mx-4 px-4 py-2 w-full text-xl"
                             >
                                 작성 완료
                             </button>
@@ -114,8 +92,4 @@ function TravelDiaryCreate() {
     )
 }
 
-export default TravelDiaryCreate
-
-function writeDiary(apiFormData: DiaryForm) {
-    throw new Error('Function not implemented.');
-}
+export default TravelLogCreate

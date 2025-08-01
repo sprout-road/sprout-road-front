@@ -1,8 +1,8 @@
 import { BsPlusCircle } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import { useDiaryList } from "../../hook/useDiaryList";
-import LoadingSpinner from "../LoadingSpinner";
-import ErrorComponent from "../common/Error";
+import { useDiaryList } from "../../../hook/useDiaryList";
+import LoadingSpinner from "../../LoadingSpinner";
+import ErrorComponent from "../../common/Error";
 
 const user = {
     name: "새싹이"
@@ -67,11 +67,11 @@ function TravelLogSection({ sigunguCode, region }: TravelLogSectionProps) {
     };
 
     const handleAddDiary = () => {
-        navigate('./create-diary');
+        navigate('/create-diary')
     };
 
     const handleClickDiary = (id: number) => {
-        navigate(`./diary/${id}`);
+        navigate(`/travel-log/${id}`)
     };
 
     if (loading) {
