@@ -110,7 +110,7 @@ export class TravelLogApi {
                 throw new Error(`${response.status} ${response.statusText}`);
             }
 
-            const result = await response.text();
+            const result = await response.json();
             return result;
         } catch (error) {
             throw new Error(error instanceof Error ? error.message : "예상치 못한 오류가 발생!");
