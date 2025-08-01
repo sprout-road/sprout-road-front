@@ -28,7 +28,7 @@ function Login() {
     return(
         <div className="min-h-screen flex flex-col p-6 mx-4 justify-center">
             <div className="flex flex-row justify-baseline items-center pl-12 mb-8">
-                <img src="/logo.png" width={80}/>
+                <img src="/logo/logo.png" width={80}/>
                 <span className="text-2xl font-bold mt-3">Login</span>
             </div>
             <div className="flex flex-col gap-2 px-4">
