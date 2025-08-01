@@ -7,7 +7,7 @@ interface SubMissionProps {
     onToggleComplete: (id: number) => void
 }
 
-function SubMission({ children, id, isComplete, onToggleComplete }: SubMissionProps) {
+function SubMission({ children, isComplete }: SubMissionProps) {
 
     const handlePlusClick = () => {
         // console.log('미션 상세 모달로 이동')

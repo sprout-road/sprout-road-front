@@ -18,7 +18,7 @@ export const useDiaryList = (sigunguCode: string): TravelLogListReturn => {
         setError('');
 
         try {
-            const result = await TravelLogApi.getTravelLogList(sigunguCode);
+            const result = await TravelLogApi.getTravelLogList();
             setData(result);
         } catch (error) {
             setError(error instanceof Error ? error.message : "데이터를 불러오는 데 실패하였습니다");

@@ -1,15 +1,14 @@
 import {MapContainer} from 'react-leaflet';
-import {LocationHighlightResponse, SidoGeoJson} from '../../types/geoTypes';
+import {SidoGeoJson} from '../../types/geoTypes';
 import {KOREAN_BOUNDS, MAP_CONFIG} from '../../shared/constants/mapConstants';
 import MapLayers from './components/MapLayers';
 import 'leaflet/dist/leaflet.css';
 
 interface KoreanMapProps {
     sidoData: SidoGeoJson;
-    highlightInfo: LocationHighlightResponse | null;
 }
 
-function KoreanMap({ sidoData, highlightInfo }: KoreanMapProps) {
+function KoreanMap({ sidoData }: KoreanMapProps) {
     return (
         <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white relative">
             <MapContainer
@@ -34,7 +33,6 @@ function KoreanMap({ sidoData, highlightInfo }: KoreanMapProps) {
             >
                 <MapLayers
                     sidoData={sidoData}
-                    location={highlightInfo}
                 />
             </MapContainer>
         </div>

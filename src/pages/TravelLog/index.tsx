@@ -45,7 +45,9 @@ function TravelLogDetail() {
 
     return (
         <div>
-            <Header onClick={handleBackClick}>트레블 로그</Header>
+            <div className="flex">
+                <Header onClick={handleBackClick}>트레블 로그</Header>
+            </div>
             <div className="relative bg-lime-600 text-white font-bold mx-6 mt-4 rounded-[10px]">
                 <div className="flex flex-col">
                     <p className="p-2">{diaryDetail.visitedAt}</p>
@@ -62,7 +64,7 @@ function TravelLogDetail() {
                         <p className="p-2">{c.content.text}</p>
                     ) : (
                         <div
-                            key={c.id}
+                            key={c.order}
                             className="flex flex-col"
                         >
                             <div className="flex justify-center">

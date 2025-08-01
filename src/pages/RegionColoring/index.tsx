@@ -72,12 +72,12 @@ function RegionColoring() {
 
     return (
         <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white">
-            {/* 전체 지도용 헤더 */}
-            <Header isHome={true}/>
-
+            <div className="z-14 fixed w-full">
+                <Header isHome={true}/>
+            </div>
             {/* 현재 위치 정보 - 헤더 바로 아래 */}
             {currentLocation && (
-                <div className="absolute top-14 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
+                <div className="absolute top-20 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3">
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                         <span className="text-sm font-medium text-gray-800">
@@ -91,7 +91,6 @@ function RegionColoring() {
             {sidoData && (
                 <KoreanMap
                     sidoData={sidoData}
-                    highlightInfo={currentLocation}
                 />
             )}
         </div>
