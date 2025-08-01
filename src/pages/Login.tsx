@@ -1,7 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin"
+import { useState } from "react";
 
 function Login() {
+    const[userId, setUserId] = useState<string>('')
+    const[password, setPassword] = useState<string>('')
+
     const { login, loading, error } = useLogin();
     const navigate = useNavigate();
 
@@ -16,7 +20,7 @@ function Login() {
         try {
             await login();
             navigate('/main');
-        } catch(erorr) {
+        } catch(error) {
             console.log(`로그인 실패: ${error}`);
         }
     }
@@ -31,11 +35,15 @@ function Login() {
                 <input 
                     type="text" 
                     placeholder="아이디를 입력해주세요"
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
                     className={inputBaseClasses}
                 />
                 <input 
                     type="password" 
                     placeholder="비밀번호를 입력해주세요."
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className={inputBaseClasses}
                 />
             </div>
