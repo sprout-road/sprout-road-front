@@ -2,7 +2,7 @@ export interface MissionData {
     id: number
     type: string
     description: string
-    success: boolean
+    completed: boolean
 }
 
 export type MissionSubmitBody = {
@@ -13,4 +13,15 @@ export type MissionSubmitBody = {
 export type MissionRefreshBody = {
     missonId: number
     regionCode: string
+}
+
+export type MissionsInfo = {
+    remainingRefreshCount: number
+    userMissions: MissionData[] 
+}
+
+export interface SubmitMissionParameter {
+    missionId: number
+    regionCode: string
+    body: MissionSubmitBody
 }

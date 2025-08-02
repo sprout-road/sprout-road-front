@@ -63,7 +63,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
     // 🎯 서버에서 위치 정보 조회
     const fetchLocationInfo = async (lat: number, lng: number): Promise<LocationResponse> => {
         try {
-            const locationResult = await LocationApiService.findLocationV2(lat, lng);
+            const locationResult = await LocationApiService.findLocationV2(35.3959361, 128.7384361);
             console.log('✅ 위치 정보 조회 성공:', locationResult);
             return locationResult;
         } catch (err) {
