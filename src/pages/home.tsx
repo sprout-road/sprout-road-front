@@ -58,7 +58,7 @@ function Home() {
         navigate(`/reward-shop`)
         return
       default:
-        return 
+        return
     }
   }
 
@@ -79,63 +79,93 @@ function Home() {
     }
   }
 
-  if (loading || userInfo === null) return <div className="flex items-center justify-center">유저 정보 가져오는 중...</div>
+  if (loading || userInfo === null) {
+    return (
+        <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white flex flex-col">
+          <Header isHome={true} />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-gray-500">유저 정보 가져오는 중...</div>
+          </div>
+        </div>
+    )
+  }
 
   return (
-    <>
-      <Header isHome={true} ></Header>
-      <div className="flex flex-col items-center bg-white text-black p-2 mt-4 mx-2">
-        <div className="w-full justify-center">
-          <div className="relative w-full flex flex-col bg-green-500 border-2 border-black">
-            <div className="flex justify-between text-xl text-gray-200 items-baseline font-bold p-4 min-h-55">
-              <div className="flex-1">
-                <p>{userInfo.nickname}님, 색다른 지역에서</p>
-                <p>색다른 체험을 하고</p>
-                <p>미션을 수행해 보아요</p>
-              </div>
-              <div className="flex shrink-0 justify-end">
-                <img 
-                  src="/logo/logo.png" 
-                  className="absolute top-20 left-45 rounded-[100px] opacity-40 bg-white"
-                  alt="메인 헤더 이미지"
-                />
+      <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white flex flex-col">
+        <Header isHome={true} />
+
+        <div className="flex-1 flex flex-col min-h-0">
+          {/* 상단 프로필 섹션 - 35% */}
+          <div className="flex-[3.5] p-4 flex items-center">
+            <div className="relative w-full flex flex-col bg-green-500 border-2 border-black rounded-lg overflow-hidden h-full">
+              <div className="flex justify-between text-xl text-gray-200 items-center font-bold p-6 h-full">
+                <div className="flex-1 z-10 flex flex-col justify-center">
+                  <p>{userInfo.nickname}님, 색다른 지역에서</p>
+                  <p>색다른 체험을 하고</p>
+                  <p>미션을 수행해 보아요</p>
+                </div>
+                <div className="flex-shrink-0">
+                  <img
+                      src="/logo/logo.png"
+                      className="w-20 h-20 rounded-full opacity-40 bg-white"
+                      alt="메인 헤더 이미지"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex items-center justify-center mt-8">
-          <div className="grid grid-cols-3 grid-rows-2 gap-2 w-full max-w-lg mx-2">
-            {menuItems.map((menu, index) => {
-              return (
-                <div
-                  key={index}
-                  onClick={() => handleMenuClick(index)}
-                  className="flex flex-col row flex-nowrap py-2 min-w-[100px]" 
-                >
-                  <div className="bg-green-200 rounded-[8px]">
-                    <img src={mappingImg(index)} alt={`menu-${index + 1}`} className="w-50 h-25 object-contain"/>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="py-2 text-md font-bold text-center">{menu.name}</p>
-                    <p className="text-xs text-center text-gray-500 whitespace-pre-line">{menu.description}</p>
-                  </div> 
+
+          {/* 메뉴 그리드 섹션 - 65% */}
+          <div className="flex-[6.5] px-4 pb-4 min-h-0">
+            <div className="grid grid-cols-3 grid-rows-2 gap-3 h-full">
+              {menuItems.map((menu, index) => {
+                return (
+                    <div
+                        key={index}
+                        onClick={() => handleMenuClick(index)}
+                        className="flex flex-col cursor-pointer min-h-0"
+                    >
+                      {/* 이미지 영역 - 정사각형에 가깝게 */}
+                      <div className="bg-green-200 rounded-lg flex-1 flex items-center justify-center min-h-0 mb-2">
+                        <img
+                            src={mappingImg(index)}
+                            alt={`menu-${index + 1}`}
+                            className="w-full h-full object-contain p-2"
+                        />
+                      </div>
+
+                      {/* 텍스트 영역 - 고정 높이 */}
+                      <div className="flex-shrink-0 px-1">
+                        <p className="text-sm font-bold text-center leading-tight mb-1">{menu.name}</p>
+                        <p className="text-[10px] text-center text-gray-500 whitespace-pre-line leading-tight">
+                          {menu.description}
+                        </p>
+                      </div>
+                    </div>
+                )
+              })}
+
+              {/* 준비 중 메뉴 */}
+              <div className="flex flex-col min-h-0">
+                <div className="bg-green-200 rounded-lg flex-1 flex items-center justify-center min-h-0 mb-2">
+                  <img
+                      src="/menu/preparing-service.png"
+                      className="w-full h-full object-contain p-2"
+                      alt="준비 중 메뉴"
+                  />
                 </div>
-              )
-            })}
-            <div className="flex flex-col mt-2">
-              <div className="bg-green-200 rounded-lg h-25 w-full">
-                <img src="/menu/preparing-service.png" className="w-full h-full p-2 object-contain rounded-lg" alt="준비 중 메뉴" />
-              </div>
-              <div className="flex flex-col mt-2 text-center justify-center">
-                <p className="text-md font-bold">준비 중...</p>
-                <p className="text-xs text-gray-500 mt-2">새로운 서비스를<br/>만나보아요!</p>
+                <div className="flex-shrink-0 px-1">
+                  <p className="text-sm font-bold text-center leading-tight mb-1">준비 중...</p>
+                  <p className="text-[10px] text-center text-gray-500 leading-tight">
+                    새로운 서비스를<br/>만나보아요!
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
-  )   
+  )
 }
 
 export default Home
