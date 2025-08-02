@@ -69,7 +69,7 @@ function Reward() {
                     <img
                         src={reward.imageUrl}
                         alt={`${reward.regionName} 리워드`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.style.display = 'none';
