@@ -7,6 +7,11 @@ import {RegionGeoJson, SidoGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
 import Header from "../../components/common/Header";
 
+interface MissionHistoryItem {
+    regionCode: string;
+    count: number;
+}
+
 function RegionColoring() {
     const {
         currentLocation,
@@ -28,7 +33,7 @@ function RegionColoring() {
                 const data = await LocationApiService.getAllSido();
                 setSidoData(data);
 
-                const missionHistory = await LocationApiService.getMissionHistory();
+                const missionHistory: MissionHistoryItem[] = await LocationApiService.getMissionHistory();
                 const missionCountMap = new Map(missionHistory.map(item => [item.regionCode, item.count]));
                 setMissionCounts(missionCountMap);
 
