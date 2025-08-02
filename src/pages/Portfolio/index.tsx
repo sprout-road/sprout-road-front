@@ -87,11 +87,10 @@ function Portfolio() {
             handleCopyLink(shareData);
         }
     };
-    
+
     const handleClickTravelLogReport = () => {
         navigate(`/portfolio/travel-logs/users/${userId}?from=${fromDate}&to=${endDate}`)
     }
-    
 
     // 조건부 렌더링을 모든 훅 호출 이후에 배치
     if (userId === undefined) {
@@ -113,51 +112,95 @@ function Portfolio() {
     function handleMissionResult() {
         navigate(`/portfolio/missions/users/${userId}?from=${fromDate}&to=${endDate}`);
     }
-    
+
     return (
-        <div>
+        <div className="fixed inset-0 w-screen viewport-height overflow-hidden bg-white flex flex-col">
             <Header onClick={handleBackClick}>디지털 포트폴리오</Header>
-            <div className="mt-2 flex flex-row gap-2 items-center justify-center">
-                <FaRegCheckCircle size={32} color="green" />
-                <p className="text-green-600 font-bold text-xl">디지털 포트폴리오가<br />성공적으로 완성되었어요!</p>
-            </div>
-            <div className="flex justify-center text-black font-bold mt-4 text-lg">
-                {userData?.nickname}의 {currentLocation?.regionName} 포트 폴리오
-            </div>
-            <div className="flex flex-col justify-center mt-8 text-green-600 gap-4">
-                <div className="flex flex-row px-8 justify-baseline items-center">
-                    <LuSprout size={28} color="green"/>
-                    <span className="font-bold">방문 기간</span>
+
+            <div className="flex-1 flex flex-col min-h-0 overflow-auto">
+                {/* 상단 성공 메시지 */}
+                <div className="flex-shrink-0 px-4 py-6">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <FaRegCheckCircle size={28} color="green" />
+                        <p className="text-green-600 font-bold text-lg text-center leading-tight">
+                            디지털 포트폴리오가<br />성공적으로 완성되었어요!
+                        </p>
+                    </div>
+
+                    <div className="text-center text-black font-bold text-lg">
+                        {userData?.nickname}의 {currentLocation?.regionName} 포트폴리오
+                    </div>
                 </div>
-                <div className="px-10 text-black font-bold">
-                    {`${splitDate(fromDate)} ~ ${splitDate(endDate)}`}
+
+                {/* 포트폴리오 내용 */}
+                <div className="flex-1 px-4 pb-4 min-h-0">
+                    <div className="space-y-6">
+                        {/* 방문 기간 */}
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <LuSprout size={24} color="green"/>
+                                <span className="font-bold text-green-600">방문 기간</span>
+                            </div>
+                            <div className="pl-9 text-black font-bold">
+                                {`${splitDate(fromDate)} ~ ${splitDate(endDate)}`}
+                            </div>
+                        </div>
+
+                        {/* 미션 성과 */}
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <FaTrophy size={24} color="green"/>
+                                <span className="font-bold text-green-600">미션 성과</span>
+                            </div>
+                            <div className="pl-9 space-y-2">
+                                <div className="text-black font-bold">
+                                    미션 {portfolioCountData?.missionCount}개 달성
+                                </div>
+                                <button
+                                    onClick={handleMissionResult}
+                                    className="text-gray-500 text-sm underline hover:text-gray-700 transition-colors"
+                                >
+                                    미션 수행 결과 보기
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* 방문 장소 */}
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <FaMapMarkerAlt size={24} color="green"/>
+                                <span className="font-bold text-green-600">방문 장소</span>
+                            </div>
+                            <div className="pl-9 space-y-2">
+                                <div className="text-black font-bold">
+                                    총 {portfolioCountData?.travelCount}곳을 방문했어요
+                                </div>
+                                <button
+                                    onClick={handleClickTravelLogReport}
+                                    className="text-gray-500 text-sm underline hover:text-gray-700 transition-colors"
+                                >
+                                    방문한 장소의 트레블 로그 보기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex flex-row px-8 justify-baseline items-center">
-                    <FaTrophy size={28} color="green"/>
-                    <span className="text-black font-bold">미션 성과</span>
-                </div>
-                <span className="px-10 font-bold text-black">미션 {portfolioCountData?.missionCount}개 달성</span>
-                <div className="px-10 flex text-gray-400" onClick={handleMissionResult}>
-                    <span className="border-b-2">미션 수행 결과 보기</span>
-                </div>
-                <div className="flex flex-row px-8 justify-baseline items-center">
-                    <FaMapMarkerAlt size={28} color="green"/>
-                    <span className="font-bold">방문 장소</span>
-                </div>
-                <span className="px-10 font-bold text-black">총 {portfolioCountData?.travelCount}곳을 방문했어요</span>
-                <div className="px-10 flex text-gray-400"><span className="border-b-2" onClick={handleClickTravelLogReport}>방문한 장소의 트레블 로그 보기</span></div>
-                <div className="flex flex-row justify-center mt-40 gap-4">
-                    <button
-                        className="px-4 py-2 w-40 text-black font-bold bg-gray-300 rounded-lg hover:bg-gray-400 transition-colors"
-                        onClick={handleShare}
-                    >
-                        공유하기
-                    </button>
-                    <button
-                        className="px-4 py-2 w-40 text-white font-bold bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                        다운로드
-                    </button>
+
+                {/* 하단 버튼 영역 - 고정 */}
+                <div className="flex-shrink-0 p-4 bg-white border-t border-gray-100">
+                    <div className="flex gap-3">
+                        <button
+                            className="flex-1 py-3 text-black font-bold bg-gray-300 rounded-lg hover:bg-gray-400 transition-colors"
+                            onClick={handleShare}
+                        >
+                            공유하기
+                        </button>
+                        <button
+                            className="flex-1 py-3 text-white font-bold bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            다운로드
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
