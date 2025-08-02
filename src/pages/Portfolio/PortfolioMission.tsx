@@ -99,7 +99,7 @@ function PortfolioMission() {
     );
 
     return (
-        <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-gray-50 flex flex-col">
+        <div className="fixed inset-0 w-screen viewport-height overflow-hidden bg-white flex flex-col">
             <Header onClick={navigateBack}>미션 수행</Header>
 
             <div className="flex-1 flex flex-col min-h-0">

@@ -30,7 +30,7 @@ function Login() {
     }
 
     return(
-        <div className="fixed inset-0 w-screen h-screen overflow-auto bg-gray-50 flex flex-col">
+        <div className="fixed inset-0 w-screen viewport-height overflow-hidden bg-white flex flex-col">
             <div className="flex-1 flex flex-col justify-center min-h-0 p-6">
                 <div className="w-full max-w-md mx-auto">
                     {/* 로고 및 타이틀 */}

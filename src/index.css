@@ -1,2 +1,35 @@
 @import "tailwindcss";
 @import "tailwind-scrollbar-hide/v4";
+
+/* index.css 또는 App.css에 추가 */
+
+/* 모바일 브라우저 상단 바 대응 */
+:root {
+    --vh: 1vh;
+}
+
+/* 기본 viewport 높이 설정 */
+html, body {
+    height: 100%;
+    height: calc(var(--vh, 1vh) * 100);
+    overflow: hidden;
+}
+
+/* 앱 컨테이너 높이 설정 */
+#root {
+    height: 100%;
+    height: calc(var(--vh, 1vh) * 100);
+}
+
+/* fixed inset-0 요소들이 실제 viewport 높이를 사용하도록 */
+.viewport-height {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+}
+
+/* iOS Safari 대응 */
+@supports (-webkit-touch-callout: none) {
+    .viewport-height {
+        height: -webkit-fill-available;
+    }
+}

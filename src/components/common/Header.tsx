@@ -1,6 +1,7 @@
 import { BsChevronLeft, BsSearch } from "react-icons/bs"
 import { BsList } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 interface HeaderProps {
     children?: React.ReactNode
@@ -19,8 +20,25 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
         navigate('/main')
     }
 
+    // 브라우저 상단 바 처리
+    useEffect(() => {
+        const setViewportHeight = () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', setViewportHeight);
+
+        return () => {
+            window.removeEventListener('resize', setViewportHeight);
+            window.removeEventListener('orientationchange', setViewportHeight);
+        };
+    }, []);
+
     return (
-        <div className="flex flex-row h-12 w-full items-center border-b-2 px-4 gap-2 flex-shrink-0">
+        <div className="flex flex-row h-12 w-full items-center border-b-2 px-4 gap-2 flex-shrink-0 bg-white relative z-10">
             {isHome ? (
                 <>
                     <div className="flex-shrink-0">
@@ -46,7 +64,9 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
                         </div>
                     </div>
                     <div className="flex shrink-0">
-                        <BsList size={24} onClick={handleToggleClick}/>
+                        <div className="flex cursor-pointer">
+                            <BsList size={20} onClick={handleToggleClick}/>
+                        </div>
                     </div>
                 </>
             ) : (
@@ -59,13 +79,13 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
                     <div className="flex flex-1 justify-center flex-nowrap">
                         <div className="text-base text-center font-medium">{children}</div>
                     </div>
+                    <div className="shrink-0">
+                        <div className="flex cursor-pointer">
+                            <BsList size={20} onClick={handleToggleClick}/>
+                        </div>
+                    </div>
                 </>
             )}
-            <div className="shrink-0">
-                <div className="flex cursor-pointer">
-                    <BsList size={20} onClick={handleToggleClick}/>
-                </div>
-            </div>
         </div>
     )
 }

@@ -91,7 +91,7 @@ function Home() {
   }
 
   return (
-      <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white flex flex-col">
+      <div className="fixed inset-0 w-screen viewport-height overflow-hidden bg-white flex flex-col">
         <Header isHome={true} />
 
         <div className="flex-1 flex flex-col min-h-0">
