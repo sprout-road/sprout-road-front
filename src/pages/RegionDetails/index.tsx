@@ -8,6 +8,7 @@ import {useLocationContext} from '../../contexts/LocationContext';
 import {RegionGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
 import Header from '../../components/common/Header';
+import MissionLegend from "../../components/common/MissionLegend.tsx";
 
 function RegionDetail() {
     const { sidoCode } = useParams<{ sidoCode: string }>();
@@ -18,12 +19,18 @@ function RegionDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [regionName, setRegionName] = useState<string>('');
+    const [missionCounts, setMissionCounts] = useState<Map<string, number>>(new Map());
 
     // 선택된 시군구 정보 상태
     const [selectedSigungu, setSelectedSigungu] = useState<{
         regionCode: string;
         regionName: string;
     } | null>(null);
+
+    interface MissionHistoryItem {
+        regionCode: string;
+        count: number;
+    }
 
     const navigateBack = () => {
         navigate('/region-coloring')
@@ -47,15 +54,17 @@ function RegionDetail() {
 
             try {
                 console.log('🗺️ 지역 상세 데이터 로드:', sidoCode);
-                const regionData = await LocationApiService.getRegionBySidoCode(sidoCode);
-                console.log("REGION DATA -----", regionData);
 
-                // 첫 번째 feature 구조 확인
-                if (regionData.features && regionData.features.length > 0) {
-                    console.log("첫 번째 feature properties:", regionData.features[0].properties);
-                }
+                const [regionData, missionHistory] = await Promise.all([
+                    LocationApiService.getRegionBySidoCode(sidoCode),
+                    LocationApiService.getMissionHistory()
+                ]);
 
                 setRegionData(regionData);
+
+                const filteredMissions = (missionHistory as MissionHistoryItem[]).filter(item => item.regionCode.startsWith(sidoCode));
+                const missionCountMap = new Map(filteredMissions.map(item => [item.regionCode, item.count]));
+                setMissionCounts(missionCountMap);
 
                 // 지역명 추출 (첫 번째 feature에서)
                 if (regionData.features && regionData.features.length > 0) {
@@ -129,7 +138,12 @@ function RegionDetail() {
                             regionName={regionName}
                             isCompact={true}
                             onSigunguClick={handleSigunguClick}
+                            missionCounts={missionCounts}
                         />
+                    )}
+
+                    {missionCounts.size > 0 && (
+                        <MissionLegend missionCounts={missionCounts} />
                     )}
                 </div>
 

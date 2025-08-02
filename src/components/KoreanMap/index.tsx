@@ -1,14 +1,16 @@
 import {MapContainer} from 'react-leaflet';
-import {SidoGeoJson} from '../../types/geoTypes';
+import {RegionGeoJson, SidoGeoJson} from '../../types/geoTypes';
 import {KOREAN_BOUNDS, MAP_CONFIG} from '../../shared/constants/mapConstants';
-import MapLayers from './components/MapLayers';
+import MapLayers from './MapLayers.tsx';
 import 'leaflet/dist/leaflet.css';
 
 interface KoreanMapProps {
     sidoData: SidoGeoJson;
+    regionData: Map<string, RegionGeoJson>;
+    missionCounts: Map<string, number>;
 }
 
-function KoreanMap({ sidoData }: KoreanMapProps) {
+function KoreanMap({ sidoData, regionData, missionCounts }: KoreanMapProps) {
     return (
         <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white relative">
             <MapContainer
@@ -33,6 +35,8 @@ function KoreanMap({ sidoData }: KoreanMapProps) {
             >
                 <MapLayers
                     sidoData={sidoData}
+                    regionData={regionData}
+                    missionCounts={missionCounts}
                 />
             </MapContainer>
         </div>
