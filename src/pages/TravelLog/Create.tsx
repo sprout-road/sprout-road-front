@@ -17,7 +17,7 @@ function TravelLogCreate() {
 
     const navigate = useNavigate()
     const params = useParams();
-    const sigunguCode = params.id;
+    const regionCode = params.id;
 
     const handleBackClick = () => {
         navigate(-1)
@@ -28,7 +28,7 @@ function TravelLogCreate() {
 
         return {
             title: title.trim(),
-            sigunguCode: sigunguCode!,
+            regionCode: regionCode!,
             traveledAt: date ? date.toISOString().split('T')[0] : '',
             contents: contents
         };

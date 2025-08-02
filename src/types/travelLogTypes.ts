@@ -12,7 +12,7 @@ export type TravelLogContents = {
 
 export type TravelLogDetail = {
     title: string
-    visitedAt: string
+    traveledAt: string
     contents: TravelLogContents[]
 }
 

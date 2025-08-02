@@ -50,7 +50,7 @@ function TravelLogDetail() {
             </div>
             <div className="relative bg-lime-600 text-white font-bold mx-6 mt-4 rounded-[10px]">
                 <div className="flex flex-col">
-                    <p className="p-2">{diaryDetail.visitedAt}</p>
+                    <p className="p-2">{diaryDetail.traveledAt}</p>
                     <p className="text-center pb-2 text-xl">{diaryDetail.title}</p>
                 </div>
                 <div className="absolute right-0 top-0 text-3xl">{checkWeather('SUNNY')}</div>

@@ -2,7 +2,6 @@ import { BsChevronLeft, BsSearch } from "react-icons/bs"
 import { BsList } from "react-icons/bs"
 import { useNavigate } from "react-router-dom"
 
-
 interface HeaderProps {
     children?: React.ReactNode
     isHome?: boolean
@@ -21,47 +20,50 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
     }
 
     return (
-        <div className="flex flex-row min-h-12 w-full items-center border-b-2 p-2 gap-2 mt-2">
+        <div className="flex flex-row h-12 w-full items-center border-b-2 px-4 gap-2 flex-shrink-0">
             {isHome ? (
                 <>
                     <div className="flex-shrink-0">
-                        <img 
-                            src="/logo/logo.png" width={50}
-                            alt="로고" 
+                        <img
+                            src="/logo/logo.png"
+                            width={40}
+                            height={40}
+                            alt="로고"
                             onClick={handleHomeClick}
                             className="cursor-pointer"
                         />
                     </div>
                     <div className="flex flex-1 justify-center">
-                        <div className="relative w-full">
-                            <input 
+                        <div className="relative w-full max-w-xs">
+                            <input
                                 type="text"
-                                placeholder="어디로 갈까?" 
-                                className="w-full border rounded-[20px] px-8 py-2 bg-gray-100 text-center"
+                                placeholder="어디로 갈까?"
+                                className="w-full border rounded-[20px] px-6 py-1 bg-gray-100 text-center text-xs"
                             />
-                            <div
-                                className="absolute right-3 top-3 transform"
-                            >
-                                <BsSearch size={16} className="shrink-0"/>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <BsSearch size={12} className="shrink-0"/>
                             </div>
                         </div>
+                    </div>
+                    <div className="flex shrink-0">
+                        <BsList size={24} onClick={handleToggleClick}/>
                     </div>
                 </>
             ) : (
                 <>
                     <div className="shrink-0">
                         <div className="flex cursor-pointer">
-                            <BsChevronLeft size={24} onClick={onClick} />
+                            <BsChevronLeft size={20} onClick={onClick} />
                         </div>
                     </div>
                     <div className="flex flex-1 justify-center flex-nowrap">
-                        <div className="text-xl text-center">{children}</div>
-                    </div>  
+                        <div className="text-base text-center font-medium">{children}</div>
+                    </div>
                 </>
             )}
             <div className="shrink-0">
                 <div className="flex cursor-pointer">
-                    <BsList size={24} onClick={handleToggleClick}/>
+                    <BsList size={20} onClick={handleToggleClick}/>
                 </div>
             </div>
         </div>
