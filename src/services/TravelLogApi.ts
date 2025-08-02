@@ -15,9 +15,9 @@ export interface TravelLog {
 }
 
 export class TravelLogApi {
-    static async getTravelLogList() {
+    static async getTravelLogList(regionCode: string) {
         try {
-            const response = await fetch(`${API_COMMON_URL}/api/travel-logs`)
+            const response = await fetch(`${API_COMMON_URL}/api/travel-logs?regionCode=${regionCode}`)
 
             if (!response.ok) {
                 throw new Error(`${response.status} ${response.statusText}`)

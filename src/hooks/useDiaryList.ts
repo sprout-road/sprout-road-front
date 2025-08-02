@@ -8,7 +8,7 @@ interface TravelLogListReturn {
     refetch: () => void
 }
 
-export const useDiaryList = (sigunguCode: string): TravelLogListReturn => {
+export const useDiaryList = (regionCode: string): TravelLogListReturn => {
     const [data, setData] = useState<TravelLog[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
@@ -18,7 +18,7 @@ export const useDiaryList = (sigunguCode: string): TravelLogListReturn => {
         setError('');
 
         try {
-            const result = await TravelLogApi.getTravelLogList();
+            const result = await TravelLogApi.getTravelLogList(regionCode);
             setData(result);
         } catch (error) {
             setError(error instanceof Error ? error.message : "데이터를 불러오는 데 실패하였습니다");
@@ -28,10 +28,10 @@ export const useDiaryList = (sigunguCode: string): TravelLogListReturn => {
     };
 
     useEffect(() => {
-        if (sigunguCode) {
+        if (regionCode) {
             fetchData();
         }
-    }, [sigunguCode]);
+    }, [regionCode]);
 
     return {
         data,

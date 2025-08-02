@@ -114,7 +114,7 @@ function RegionDetail() {
             <Header onClick={navigateBack}>트레블 로그</Header>
 
             {/* 메인 컨텐츠 영역 - 헤더 아래 */}
-            <div className="pt-14 flex-1 p-4 flex flex-col gap-4">
+            <div className="pt-2.5 flex-1 p-4 flex flex-col gap-4">
                 {/* 상단: 지도 영역 (55%) + 현재 위치 정보 */}
                 <div className="relative h-[55%] bg-white border-2 border-[#C9E7CA] rounded-lg overflow-hidden mt-2">
                     {/* 현재 위치 정보 - 지도 내부 상단 */}
@@ -150,7 +150,7 @@ function RegionDetail() {
                 {/* 하단: 트래블 로그 영역 (45%) */}
                 <div className="h-[45%]">
                     <TravelLogSection
-                        sigunguCode={selectedSigungu?.regionCode || ''}
+                        regionCode={selectedSigungu?.regionCode || ''}
                         region={selectedSigungu?.regionName || '지역을 선택해주세요'}
                     />
                 </div>

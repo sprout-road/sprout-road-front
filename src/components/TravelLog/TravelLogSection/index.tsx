@@ -9,19 +9,19 @@ const user = {
 }
 
 interface TravelLogSectionProps {
-    sigunguCode: string;
+    regionCode: string;
     region: string;
 }
 
-function TravelLogSection({ sigunguCode, region }: TravelLogSectionProps) {
+function TravelLogSection({ regionCode, region }: TravelLogSectionProps) {
     const navigate = useNavigate();
 
     // 지역이 선택되지 않은 경우 (빈 문자열이거나 기본 메시지인 경우)
-    const isRegionSelected = sigunguCode && sigunguCode.trim() !== '' && region !== '지역을 선택해주세요';
+    const isRegionSelected = regionCode && regionCode.trim() !== '' && region !== '지역을 선택해주세요';
 
     // Hook은 항상 호출 (조건부 호출 금지!)
     // 지역이 선택되지 않았을 때는 빈 문자열을 전달하여 API 호출 방지
-    const { data: diaryList, loading, error, refetch } = useDiaryList(isRegionSelected ? sigunguCode : '');
+    const { data: diaryList, loading, error, refetch } = useDiaryList(isRegionSelected ? regionCode : '');
 
     // 지역이 선택되지 않았을 때는 선택 안내 메시지만 표시
     if (!isRegionSelected) {
