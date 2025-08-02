@@ -9,6 +9,8 @@ import Login from './pages/Login';
 import TravelLogDetail from './pages/TravelLog';
 import TravelLogCreate from './pages/TravelLog/Create';
 import Reward from "./pages/Reward.tsx";
+import PortfolioGeneration from './pages/Portfolio/Generation'; 
+import Portfolio from './pages/Portfolio';
 
 function App() {
     return (
@@ -22,6 +24,9 @@ function App() {
                 <Route path="/travel-log/:diaryId" element={<TravelLogDetail />} />
                 <Route path="/create-diary" element={<TravelLogCreate />} />
                 <Route path="/reward" element={<Reward />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/portfolio" element={<PortfolioGeneration />} />
+                <Route path="/portfolio/generate/users/:userId" element={<Portfolio />} />
             </Routes>
         </LocationProvider>
     );

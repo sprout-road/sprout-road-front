@@ -138,13 +138,13 @@ function Mission() {
     const currentRegionCode = currentRegionData.regionCode
 
     return (
-        <>
+        <div className="w-screen">
             <Header isHome={false} onClick={handleBackClick}>미션</Header>
-            <div className="relative flex flex-row w-full h-20 gap-0">
-                <img src="/mission-deco.png" alt="미션 장식 이미지"/>
-                <img src="/mission-deco.png" alt="미션 장식 이미지"/>
-            </div>
-            <div className="flex flex-col p-4 mt-6">
+            <div className="w-full p-4 mt-0">
+                <div className="w-full flex flex-row flex-1 max-w-44 h-20 gap-0">
+                    <img src="/mission-deco.png" alt="미션 장식 이미지"/>
+                    <img src="/mission-deco.png" alt="미션 장식 이미지"/>
+                </div>
                 <div className="bg-lime-200 text-black font-bold text-center p-4 mb-20 rounded-[40px]">
                     오늘의 미션
                 </div>
@@ -191,7 +191,7 @@ function Mission() {
                     )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

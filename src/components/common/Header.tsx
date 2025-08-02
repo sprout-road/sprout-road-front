@@ -45,6 +45,9 @@ function Header({ children, isHome = false, onClick }: HeaderProps) {
                             </div>
                         </div>
                     </div>
+                    <div className="flex shrink-0">
+                        <BsList size={24} onClick={handleToggleClick}/>
+                    </div>
                 </>
             ) : (
                 <>

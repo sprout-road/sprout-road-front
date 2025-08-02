@@ -3,7 +3,7 @@ import { TravelLogContents, TravelLogDetail } from "../types/travelLogTypes"
 
 export type TravelLogForm = {
     title: string
-    sigunguCode: string
+    regionCode: string
     traveledAt: string
     contents: TravelLogContents[]
 }
@@ -70,7 +70,7 @@ export class TravelLogApi {
             // throw new Error(error instanceof Error ? error.message : "알 수 없는 오류가 발생!");
             return {
                 title: "제목",
-                visitedAt: "25년07월17일",
+                traveledAt: "25년07월17일",
                 contents: [
                     {
                         type:"text",
