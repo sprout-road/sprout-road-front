@@ -1,5 +1,5 @@
 import { API_COMMON_URL } from "../constants/constants";
-import { MissionRefreshBody, MissionSubmitBody } from "../types/missionTypes";
+import { MissionSubmitBody } from "../types/missionTypes";
 
 export class missionApi {
     static async getMissionStatus(regionCode: string): Promise<boolean> {

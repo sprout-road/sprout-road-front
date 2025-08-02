@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import Header from "../../components/common/Header"
 import SubMission from "../../components/Mission/SubMission"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { MissionData, MissionsInfo } from "../../types/missionTypes"
 import { missionApi } from "../../services/missionApi"
 import { useLocationContext } from "../../contexts/LocationContext"
@@ -10,6 +10,7 @@ import ErrorComponent from "../../components/common/Error"
 import MissionCompleteModal from "../../components/Mission/MissionCompleteModal"
 
 function Mission() {
+
     const [totalMissions, setTotalMissions] = useState<MissionsInfo | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [missionStatus, setMissionStatus] = useState<boolean>(false)
@@ -17,19 +18,6 @@ function Mission() {
     const { currentLocation: currentRegionData, isLocationLoading, locationError } = useLocationContext()
 
     const navigate = useNavigate()
-
-    // 모든 미션 완료 상태 확인
-    const allMissionComplete = useMemo(() => {
-        if (!totalMissions?.userMissions) return false
-        return totalMissions.userMissions.every(mission => mission.completed)
-    }, [totalMissions])
-
-    // 모든 미션 완료 시 모달 자동 오픈
-    useEffect(() => {
-        if (allMissionComplete) {
-            setIsModalOpen(true)
-        }
-    }, [allMissionComplete])
 
     const handleBackClick = () => {
         navigate('/main')
@@ -151,8 +139,11 @@ function Mission() {
 
     return (
         <>
-            {console.log("미션시작상태", missionStatus)}
             <Header isHome={false} onClick={handleBackClick}>미션</Header>
+            <div className="relative flex flex-row w-full h-20 gap-0">
+                <img src="/mission-deco.png" alt="미션 장식 이미지"/>
+                <img src="/mission-deco.png" alt="미션 장식 이미지"/>
+            </div>
             <div className="flex flex-col p-4 mt-6">
                 <div className="bg-lime-200 text-black font-bold text-center p-4 mb-20 rounded-[40px]">
                     오늘의 미션
