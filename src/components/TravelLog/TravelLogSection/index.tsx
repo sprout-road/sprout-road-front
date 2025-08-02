@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDiaryList } from "../../../hooks/useDiaryList";
 import LoadingSpinner from "../../LoadingSpinner";
 import ErrorComponent from "../../common/Error";
+import {useLocationContext} from "../../../contexts/LocationContext.tsx";
 
 const user = {
     name: "새싹이"
@@ -15,6 +16,7 @@ interface TravelLogSectionProps {
 
 function TravelLogSection({ regionCode, region }: TravelLogSectionProps) {
     const navigate = useNavigate();
+    const { currentLocation } = useLocationContext();
 
     // 지역이 선택되지 않은 경우 (빈 문자열이거나 기본 메시지인 경우)
     const isRegionSelected = regionCode && regionCode.trim() !== '' && region !== '지역을 선택해주세요';
@@ -107,17 +109,21 @@ function TravelLogSection({ regionCode, region }: TravelLogSectionProps) {
                     <h2 className="text-xl font-bold">
                         {user.name}님의 {region} 기록일지
                     </h2>
-                    <BsPlusCircle
-                        size={25}
-                        className="cursor-pointer hover:text-green-600 transition-colors"
-                        onClick={handleAddDiary}
-                        title="새 일기 작성"
-                    />
+                    {
+                        (regionCode == currentLocation?.regionCode) ?
+                            <BsPlusCircle
+                                size={25}
+                                className="cursor-pointer hover:text-green-600 transition-colors"
+                                onClick={handleAddDiary}
+                                title="새 일기 작성"
+                            /> : null
+                    }
                 </div>
 
                 {/* 일기 목록 영역 */}
                 <div className="flex-1 overflow-y-auto scrollbar-hide mb-4">
                     {!diaryList || diaryList.length === 0 ? (
+                        (regionCode == currentLocation?.regionCode) ? (
                         <div className="text-center text-gray-500 py-8">
                             <p className="text-lg mb-2">아직 작성된 기록이 없어요</p>
                             <p className="text-sm">
@@ -125,6 +131,14 @@ function TravelLogSection({ regionCode, region }: TravelLogSectionProps) {
                                 첫 번째 여행 기록을 남겨보세요!
                             </p>
                         </div>
+                        ) :
+                            <div className="text-center text-gray-500 py-8">
+                                <p className="text-lg mb-2">아직 작성된 기록이 없어요</p>
+                                <p className="text-sm">
+                                    해당 지역에 놀러와서,
+                                    첫 번째 여행 기록을 남겨보세요!
+                                </p>
+                            </div>
                     ) : (
                         diaryList.map((diary) => (
                             <div
