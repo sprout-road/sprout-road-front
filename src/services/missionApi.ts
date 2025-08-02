@@ -2,7 +2,7 @@ import { API_COMMON_URL } from "../constants/constants";
 import { MissionRefreshBody, MissionSubmitBody } from "../types/missionTypes";
 
 export class missionApi {
-    static async getMissionStatus(regionCode: string): Promise<Boolean> {
+    static async getMissionStatus(regionCode: string): Promise<boolean> {
         try {
             const response = await fetch(`${API_COMMON_URL}/api/missions/regions/${regionCode}/status`)
 
@@ -109,7 +109,7 @@ export class missionApi {
         }
     }
     
-    static async refreshMission(missionId: number, regionCode: number, body: MissionRefreshBody) {
+    static async refreshMission(missionId: number, regionCode: string) {
         try {
             const response = await fetch(`${API_COMMON_URL}/api/missions/${missionId}/regions/${regionCode}/refresh`, {
                 method: "POST",

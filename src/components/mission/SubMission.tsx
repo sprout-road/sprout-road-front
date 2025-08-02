@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { ReactEventHandler, useState } from "react";
 import { BsFillPlusCircleFill } from "react-icons/bs";
+import { IoRefreshCircle } from "react-icons/io5";
 import TextMissionContent from "./TextMissionContent";
 import ImageMissionContent from "./ImageMissionContent";
 import { missionApi } from "../../services/missionApi";
@@ -14,15 +15,17 @@ interface SubMissionProps {
     type: string
     isComplete: boolean
     onToggleComplete: () => void
+    handleRefreshClick: (id: number, code: string) => void
 }
 
-function SubMission({ children, id, type, isComplete, onToggleComplete }: SubMissionProps) {
+function SubMission({ children, id, type, isComplete, onToggleComplete, handleRefreshClick }: SubMissionProps) {
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [text, setText] = useState<string>('')
     const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
     const { currentLocation: regionData, isLocationLoading } = useLocationContext()
 
-    const handlePlusClick = () => {
+    const handleMissionClick = (e: React.MouseEvent) => {
+        e.preventDefault()
         setIsOpen(prev => !prev)
     }
 
@@ -39,10 +42,8 @@ function SubMission({ children, id, type, isComplete, onToggleComplete }: SubMis
 
         onToggleComplete();
         setIsOpen(false)
-        console.log(missionId, regionCode, body)
         const result = await missionApi.submitMission(missionId, regionCode, body)
-        console.log(result)
-        /* 모달 오픈 */
+        return result
     }
 
     const isCompleteDisabled = () => {
@@ -69,21 +70,23 @@ function SubMission({ children, id, type, isComplete, onToggleComplete }: SubMis
         <div className="flex flex-col border-y-2 p-4">
             <div  
                 className={`
-                    relative flex flex-row items-center justify-between
+                    relative flex flex-row items-center
                     ${isComplete ? 'opacity-60' : ''}
                 `}
             >
-                <div className="flex items-center">
+                <div 
+                    className="flex flex-1 items-center justify-between"
+                    onClick={(e) => handleMissionClick(e)}
+                >
                     <span>{children}</span>
-                    <div className="ml-2">
-                        <BsFillPlusCircleFill 
-                            size={16} 
+                    <div className="ml-4">
+                        <IoRefreshCircle 
+                            size={28} 
                             color="gray" 
-                            onClick={handlePlusClick}
-                            className="cursor-pointer"
+                            onClick={() => handleRefreshClick(id, regionData.regionCode)}
                         />
                     </div>
-                </div>
+            </div>
                 {isComplete && (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-red-600 text-lg font-bold opacity-90 rotate-12">

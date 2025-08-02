@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import Header from "../../components/common/Header"
 import SubMission from "../../components/Mission/SubMission"
 import { useEffect, useMemo, useState } from "react"
-import { MissionsInfo } from "../../types/missionTypes"
+import { MissionData, MissionsInfo } from "../../types/missionTypes"
 import { missionApi } from "../../services/missionApi"
 import { useLocationContext } from "../../contexts/LocationContext"
 import LoadingSpinner from "../../components/LoadingSpinner"
@@ -66,7 +66,46 @@ function Mission() {
                 )
             }
         })
+        setIsModalOpen(true)
     }
+
+    const handleRefreshClick = async (missionId: number, regionCode: string) => {
+        try {
+            // 남은 새로고침 횟수 확인
+            if (totalMissions && totalMissions.remainingRefreshCount <= 0) {
+                alert("새로고침 횟수를 모두 사용했습니다.");
+                return;
+            }
+
+            setLoading(true); 
+            
+            const refreshResult = await missionApi.refreshMission(missionId, regionCode);
+            
+            const { remainingRefreshCount, userMissions } = refreshResult;
+            
+            setTotalMissions(prev => {
+                if (!prev) return null;
+                
+                return {
+                    ...prev,
+                    remainingRefreshCount: remainingRefreshCount,
+                    userMissions: prev.userMissions.map(mission => {
+                        /* 새 미션 교체 */
+                        const newMission = userMissions.find((newM: MissionData) => newM.id === mission.id);
+                        return newMission ? newMission : mission;
+                    })
+                };
+            });
+            
+            console.log('미션 새로고침 완료:', refreshResult);
+            
+        } catch (error) {
+            console.error('미션 새로고침 실패:', error);
+            alert("미션 새로고침에 실패했습니다.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const initializeMissions = async () => {
@@ -80,12 +119,11 @@ function Mission() {
                 console.log('미션 상태:', status);
                 setMissionStatus(status)
                 
-                // 미션이 시작된 상태(true)일 때만 미션 리스트 조회
                 if (status) {
                     const missions = await missionApi.getMission(currentRegionData.regionCode)
                     setTotalMissions(missions)
                 } else {
-                    setTotalMissions(null) // 미션이 시작되지 않았으면 null
+                    setTotalMissions(null) 
                 }
             } catch (error) {
                 console.error('미션 초기화 실패:', error)
@@ -101,7 +139,6 @@ function Mission() {
         setIsModalOpen(false)
     }
 
-    // 로딩 조건 수정: missionStatus가 false일 때는 totalMissions이 null이어도 정상
     if (isLocationLoading || currentRegionData === undefined || loading === true) {
         return <LoadingSpinner message="필요한 정보를 가져오는 중입니다" />
     }
@@ -142,14 +179,16 @@ function Mission() {
                                         type={mission.type} 
                                         isComplete={mission.completed}
                                         onToggleComplete={() => handleToggleComplete(mission.id)}
+                                        handleRefreshClick={handleRefreshClick}
                                     >
                                         {mission.description}
                                     </SubMission>
                                 )
                             })
                         ) : (
-                            // missionStatus가 false일 때 보여줄 placeholder 미션들
                             <div className="space-y-4">
+                                <div className="h-16 bg-gray-100 rounded border-y-2"></div>
+                                <div className="h-16 bg-gray-100 rounded border-y-2"></div>
                                 <div className="h-16 bg-gray-100 rounded border-y-2"></div>
                                 <div className="h-16 bg-gray-100 rounded border-y-2"></div>
                                 <div className="h-16 bg-gray-100 rounded border-y-2"></div>
