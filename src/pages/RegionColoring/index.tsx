@@ -6,6 +6,7 @@ import {useLocationContext} from '../../contexts/LocationContext';
 import {RegionGeoJson, SidoGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
 import Header from "../../components/common/Header";
+import MissionLegend from "../../components/common/MissionLegend.tsx";
 
 interface MissionHistoryItem {
     regionCode: string;
@@ -114,6 +115,10 @@ function RegionColoring() {
                     regionData={regionData}
                     missionCounts={missionCounts}
                 />
+            )}
+
+            {missionCounts.size > 0 && (
+                <MissionLegend missionCounts={missionCounts} />
             )}
         </div>
     );
