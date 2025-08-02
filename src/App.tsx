@@ -1,7 +1,7 @@
 import {LocationProvider} from './contexts/LocationContext';
 import {Route, Routes} from 'react-router-dom';
 import Home from './pages/home';
-import Mission from './pages/Mission'
+import Mission from './pages/Mission/index'
 import RegionColoring from './pages/RegionColoring';
 import RegionDetail from './pages/RegionDetails';
 import './index.css';
