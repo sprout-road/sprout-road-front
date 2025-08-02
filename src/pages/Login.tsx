@@ -10,10 +10,10 @@ function Login() {
     const navigate = useNavigate();
 
     /* 공통 요소 디자인 */
-    const inputBaseClasses = "bg-white p-3 border-2 rounded-[8px] border-green-600"
-    const textTagBaseClasses = "transition text-xs text-green-700 hover:border-b"
-    const socialButtonBaseClasses = "flex items-center gap-10 px-2 py-2 mx-2 rounded-[8px] text-black transition border-2 cursor-pointer"
-    const logoContainerClasses = "w-8 h-8 flex items-center justify-baseline flex-shrink-0"
+    const inputBaseClasses = "bg-white p-3 border-2 rounded-[8px] border-green-600 w-full"
+    const textTagBaseClasses = "transition text-xs text-green-700 hover:border-b cursor-pointer"
+    const socialButtonBaseClasses = "flex items-center justify-center gap-3 px-4 py-3 rounded-[8px] text-black transition border-2 cursor-pointer w-full"
+    const logoContainerClasses = "w-6 h-6 flex items-center justify-center flex-shrink-0"
     const logoImgClasses = "max-w-full max-h-full object-contain"
 
     const onLogin = async () => {
@@ -27,79 +27,104 @@ function Login() {
 
     if (error) {
         console.log("에러 발생 !!!");
-        
     }
 
     return(
-        <div className="min-h-screen flex flex-col p-6 mx-4 justify-center">
-            <div className="flex flex-row justify-baseline items-center pl-12 mb-8">
-                <img src="/logo/logo.png" width={80}/>
-                <span className="text-2xl font-bold mt-3">Login</span>
-            </div>
-            <div className="flex flex-col gap-2 px-4">
-                <input 
-                    type="text" 
-                    placeholder="아이디를 입력해주세요"
-                    value={userId}
-                    onChange={(e) => setUserId(e.target.value)}
-                    className={inputBaseClasses}
-                />
-                <input 
-                    type="password" 
-                    placeholder="비밀번호를 입력해주세요."
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={inputBaseClasses}
-                />
-            </div>
-            <div className="flex mt-2 mb-6 px-4">
-                <input type="checkbox" />
-                <span>로그인 상태 유지</span>
-            </div>
-            <div className="flex mt-4 px-4">
-                <button 
-                    type="submit" 
-                    className="flex-1 px-4 py-2 rounded-[8px] font-bold text-xl bg-green-600 text-white transition-colors hover:bg-green-700 cursor-pointer"
-                    onClick={onLogin}
-                    disabled={loading}
-                >
-                    로그인
-                </button> 
-            </div>
-            <div className="flex justify-between px-4 mt-2 mb-8">
-                <span className={textTagBaseClasses}>회원가입</span>
-                <div className="flex gap-2">
-                    <a href="/" className={textTagBaseClasses}>아이디찾기</a> 
-                    <a href="/" className={textTagBaseClasses}> 비밀번호찾기</a>
-                </div>
-            </div>
-            <div className="flex flex-col gap-3 mt-12">
-                <div 
-                    className={`${socialButtonBaseClasses} hover:border-yellow-200 hover:text-yellow-600`}
-                    onClick={onLogin}
-                >
-                    <div className={logoContainerClasses}>
-                        <img src="/logo/KAKAO_LOGO.png" className={logoImgClasses}/>
+        <div className="fixed inset-0 w-screen h-screen overflow-auto bg-gray-50 flex flex-col">
+            <div className="flex-1 flex flex-col justify-center min-h-0 p-6">
+                <div className="w-full max-w-md mx-auto">
+                    {/* 로고 및 타이틀 */}
+                    <div className="flex flex-col items-center mb-8">
+                        <div className="flex items-center gap-3 mb-2">
+                            <img src="/logo/logo.png" className="w-16 h-16" alt="로고"/>
+                            <span className="text-3xl font-bold text-gray-800">Login</span>
+                        </div>
                     </div>
-                    <span className="font-bold">카카오로 시작하기</span>
-                </div>
-                <div 
-                    className={`${socialButtonBaseClasses} hover:border-green-200 hover:text-green-600`}
-                    onClick={onLogin}
-                >
-                    <div className={logoContainerClasses}>
-                        <img src="/logo/NAVER_LOGO.png" className={logoImgClasses}/>
+
+                    {/* 입력 폼 */}
+                    <div className="flex flex-col gap-4 mb-4">
+                        <input
+                            type="text"
+                            placeholder="아이디를 입력해주세요"
+                            value={userId}
+                            onChange={(e) => setUserId(e.target.value)}
+                            className={inputBaseClasses}
+                        />
+                        <input
+                            type="password"
+                            placeholder="비밀번호를 입력해주세요."
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={inputBaseClasses}
+                        />
                     </div>
-                    <span className="font-bold">네이버로 시작하기</span>
-                </div>
-                <div 
-                    className={`${socialButtonBaseClasses} pr-6 hover:border-gray-200 hover:text-gray-600`}
-                    onClick={onLogin}
-                >
-                    <div className={logoContainerClasses}>
-                        <img src="/logo/GOOGLE_LOGO.png" className={logoImgClasses}/>
+
+                    {/* 로그인 상태 유지 */}
+                    <div className="flex items-center gap-2 mb-6">
+                        <input type="checkbox" id="keepLogin" className="w-4 h-4"/>
+                        <label htmlFor="keepLogin" className="text-sm text-gray-600 cursor-pointer">
+                            로그인 상태 유지
+                        </label>
                     </div>
-                    <span className="font-bold mx-2">구글로 시작하기</span>
+
+                    {/* 로그인 버튼 */}
+                    <button
+                        type="submit"
+                        className="w-full py-3 rounded-[8px] font-bold text-lg bg-green-600 text-white transition-colors hover:bg-green-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+                        onClick={onLogin}
+                        disabled={loading}
+                    >
+                        {loading ? '로그인 중...' : '로그인'}
+                    </button>
+
+                    {/* 회원가입, 찾기 링크 */}
+                    <div className="flex justify-between mb-8">
+                        <span className={textTagBaseClasses}>회원가입</span>
+                        <div className="flex gap-4">
+                            <a href="/" className={textTagBaseClasses}>아이디찾기</a>
+                            <a href="/" className={textTagBaseClasses}>비밀번호찾기</a>
+                        </div>
+                    </div>
+
+                    {/* 구분선 */}
+                    <div className="flex items-center gap-4 mb-6">
+                        <hr className="flex-1 border-gray-300"/>
+                        <span className="text-sm text-gray-500">또는</span>
+                        <hr className="flex-1 border-gray-300"/>
+                    </div>
+
+                    {/* 소셜 로그인 */}
+                    <div className="flex flex-col gap-3">
+                        <div
+                            className={`${socialButtonBaseClasses} hover:border-yellow-400 hover:bg-yellow-50`}
+                            onClick={onLogin}
+                        >
+                            <div className={logoContainerClasses}>
+                                <img src="/logo/KAKAO_LOGO.png" className={logoImgClasses} alt="카카오"/>
+                            </div>
+                            <span className="font-medium">카카오로 시작하기</span>
+                        </div>
+
+                        <div
+                            className={`${socialButtonBaseClasses} hover:border-green-400 hover:bg-green-50`}
+                            onClick={onLogin}
+                        >
+                            <div className={logoContainerClasses}>
+                                <img src="/logo/NAVER_LOGO.png" className={logoImgClasses} alt="네이버"/>
+                            </div>
+                            <span className="font-medium">네이버로 시작하기</span>
+                        </div>
+
+                        <div
+                            className={`${socialButtonBaseClasses} hover:border-gray-400 hover:bg-gray-50`}
+                            onClick={onLogin}
+                        >
+                            <div className={logoContainerClasses}>
+                                <img src="/logo/GOOGLE_LOGO.png" className={logoImgClasses} alt="구글"/>
+                            </div>
+                            <span className="font-medium">구글로 시작하기</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
