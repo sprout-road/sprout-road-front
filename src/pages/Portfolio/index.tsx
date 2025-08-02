@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router-dom"
+import {useNavigate, useSearchParams} from "react-router-dom"
 import Header from "../../components/common/Header"
 import { FaRegCheckCircle } from "react-icons/fa";
 import { LuSprout } from "react-icons/lu";
@@ -21,7 +21,7 @@ function Portfolio() {
     const regionCode = currentLocation?.regionCode
 
     const {data: portfolioCountData, loading: portfolioCountLoading, error: portfolioCountError } = useUserPortfolio(
-        userData?.id, 
+        userData?.id,
         fromDate,     
         endDate,      
         regionCode
@@ -121,7 +121,9 @@ function Portfolio() {
                     <span className="text-black font-bold">미션 성과</span>
                 </div>
                 <span className="px-10 font-bold text-black">미션 {portfolioCountData?.missionCount}개 달성</span>
-                <div className="px-10 flex text-gray-400"><span className="border-b-2">미션 수행 결과 보기</span></div>
+                <div className="px-10 flex text-gray-400">
+                    <span className="border-b-2">미션 수행 결과 보기</span>
+                </div>
                 <div className="flex flex-row px-8 justify-baseline items-center">
                     <FaMapMarkerAlt size={28} color="green"/>
                     <span className="font-bold">방문 장소</span>
