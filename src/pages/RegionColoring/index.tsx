@@ -3,7 +3,7 @@ import KoreanMap from '../../components/KoreanMap/index';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorDisplay from '../../components/ErrorDisplay';
 import {useLocationContext} from '../../contexts/LocationContext';
-import {SidoGeoJson} from '../../types/geoTypes';
+import {RegionGeoJson, SidoGeoJson} from '../../types/geoTypes';
 import {LocationApiService} from '../../services/locationApi';
 import Header from "../../components/common/Header";
 
@@ -15,6 +15,9 @@ function RegionColoring() {
     } = useLocationContext();
 
     const [sidoData, setSidoData] = useState<SidoGeoJson | null>(null);
+    const [missionCounts, setMissionCounts] = useState<Map<string, number>>(new Map());
+    const [regionData, setRegionData] = useState<Map<string, RegionGeoJson>>(new Map());
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -24,8 +27,18 @@ function RegionColoring() {
             try {
                 const data = await LocationApiService.getAllSido();
                 setSidoData(data);
+
                 const missionHistory = await LocationApiService.getMissionHistory();
-                console.log(missionHistory);
+                const missionCountMap = new Map(missionHistory.map(item => [item.regionCode, item.count]));
+                setMissionCounts(missionCountMap);
+
+                const sidoCodes = new Set(missionHistory.map(item => item.regionCode.substring(0, 2)));
+                const regionDataMap = new Map<string, RegionGeoJson>();
+                for (const sidoCode of sidoCodes) {
+                    const regionGeoJson = await LocationApiService.getRegionBySidoCode(sidoCode);
+                    regionDataMap.set(sidoCode, regionGeoJson);
+                }
+                setRegionData(regionDataMap);
             } catch (err) {
                 setError(err instanceof Error ? err.message : '지도 데이터를 불러오는데 실패했습니다.');
             } finally {
@@ -93,6 +106,8 @@ function RegionColoring() {
             {sidoData && (
                 <KoreanMap
                     sidoData={sidoData}
+                    regionData={regionData}
+                    missionCounts={missionCounts}
                 />
             )}
         </div>
