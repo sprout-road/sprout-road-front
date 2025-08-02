@@ -33,3 +33,166 @@ html, body {
         height: -webkit-fill-available;
     }
 }
+
+/* index.css에 추가할 Quill 커스텀 스타일 */
+
+/* ==================== Quill Editor Styles ==================== */
+
+/* 툴바 완전 숨기기 */
+.ql-toolbar {
+    display: none !important;
+}
+
+/* 에디터 컨테이너 높이 100% 사용 */
+.ql-container {
+    height: calc(100% - 0px) !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    font-size: 14px;
+}
+
+.ql-editor {
+    height: 100% !important;
+    padding: 16px !important;
+    line-height: 1.6;
+    font-family: inherit;
+    overflow-y: auto;
+}
+
+/* Placeholder 스타일 개선 */
+.ql-editor.ql-blank::before {
+    color: #9ca3af !important;
+    font-style: normal !important;
+    font-size: 14px !important;
+    left: 16px !important;
+    right: 16px !important;
+    top: 16px !important;
+}
+
+/* 포커스 상태 */
+.ql-container.ql-snow {
+    border: 1px solid #e5e7eb !important;
+    transition: border-color 0.2s ease;
+}
+
+.ql-container:focus-within {
+    border-color: #84cc16 !important;
+    box-shadow: 0 0 0 2px rgba(132, 204, 22, 0.1) !important;
+}
+
+/* 이미지 스타일 */
+.ql-editor img {
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+/* 스크롤바 스타일 (웹킷 브라우저) */
+.ql-editor::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ql-editor::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+.ql-editor::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.ql-editor::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+    .ql-editor {
+        padding: 12px !important;
+        font-size: 16px !important; /* iOS에서 줌 방지 */
+    }
+
+    .ql-editor.ql-blank::before {
+        font-size: 16px !important;
+        left: 12px !important;
+        right: 12px !important;
+        top: 12px !important;
+    }
+}
+
+/* CSS 파일에 추가할 DatePicker 커스텀 스타일 */
+
+/* DatePicker 컨테이너 */
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.react-datepicker__input-container {
+    width: 100%;
+}
+
+/* DatePicker 팝업 */
+.react-datepicker {
+    border: 2px solid #84cc16;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: inherit;
+}
+
+.react-datepicker__header {
+    background-color: #84cc16;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+}
+
+.react-datepicker__current-month {
+    color: white;
+    font-weight: bold;
+}
+
+.react-datepicker__day-name {
+    color: white;
+    font-weight: 600;
+}
+
+.react-datepicker__day--selected {
+    background-color: #84cc16;
+    color: white;
+}
+
+.react-datepicker__day--keyboard-selected {
+    background-color: #a3e635;
+    color: white;
+}
+
+.react-datepicker__day:hover {
+    background-color: #a3e635;
+    color: white;
+}
+
+.react-datepicker__navigation {
+    top: 10px;
+}
+
+.react-datepicker__navigation--previous {
+    border-right-color: white;
+}
+
+.react-datepicker__navigation--next {
+    border-left-color: white;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+    .react-datepicker {
+        font-size: 14px;
+    }
+
+    .react-datepicker__day {
+        width: 2rem;
+        height: 2rem;
+        line-height: 2rem;
+    }
+}

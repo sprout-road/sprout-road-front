@@ -9,23 +9,16 @@ interface EditorProps {
     onChange: (value: string) => void;
 }
 
-function TravelLogEditor({ 
-    value, 
-    onChange 
-}: EditorProps) {
+function TravelLogEditor({
+                             value,
+                             onChange
+                         }: EditorProps) {
     const quillRef = useRef<ReactQuill>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // 이미지 버튼 제외한 툴바 설정
+    // 툴바 완전 제거
     const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            ['blockquote'],
-            ['link']  // 'image' 제거
-        ],
+        toolbar: false,
     };
 
     const formats = [
@@ -47,7 +40,7 @@ function TravelLogEditor({
             return;
         }
 
-        const maxSize = 5 * 1024 * 1024; 
+        const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
             alert('파일 크기는 5MB 이하여야 합니다.');
             return;
@@ -72,7 +65,7 @@ function TravelLogEditor({
 
         // 이미지 삽입
         quill.insertEmbed(index, 'image', imageUrl);
-        
+
         // 타입 구분용 속성 추가
         setTimeout(() => {
             const imgElement = quill.root.querySelector(`img[src="${imageUrl}"]`);
@@ -86,8 +79,9 @@ function TravelLogEditor({
     };
 
     return (
-        <div className="w-full">
-            <div className="mt-4 mx-2 my-2" style={{ width: '96%', height: '60%' }}>
+        <div className="flex flex-col h-full">
+            {/* 에디터 영역 - 전체 높이에서 버튼 영역 제외 */}
+            <div className="flex-1 mb-4">
                 <ReactQuill
                     ref={quillRef}
                     value={value}
@@ -95,19 +89,21 @@ function TravelLogEditor({
                     modules={modules}
                     formats={formats}
                     placeholder="여행한 곳에 대해 자유롭게 글과 사진을 남겨보세요"
-                    style={{ height: '360px' }}
+                    className="h-full"
+                    theme="snow"
                 />
             </div>
 
-            <div className="flex flex-row justify-baseline items-center mt-20 mb-4 ml-2 gap-4">
+            {/* 사진 첨부 버튼 - 하단 고정 */}
+            <div className="flex-shrink-0 flex items-center gap-3">
                 <button
                     type="button"
                     onClick={handleImageClick}
-                    className="flex items-center px-2 py-2 bg-white rounded-[8px] border"
+                    className="flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg border transition-colors"
                 >
-                    <FaCamera size={16} color='gray' />
+                    <FaCamera size={16} className="text-gray-600" />
                 </button>
-                <span className="text-sm">사진첨부</span>
+                <span className="text-sm text-gray-600">사진첨부</span>
             </div>
 
             <input
