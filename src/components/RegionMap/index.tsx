@@ -111,7 +111,8 @@ function RegionMap({
                 ...baseStyle,
                 ...colorMap[intensity],
                 color: '#666666', // 경계선은 회색으로 유지
-                weight: 1
+                weight: 1,
+                className: undefined
             };
         };
     }, [missionCounts]);
@@ -186,6 +187,7 @@ function RegionMap({
                 maxBounds={regionBounds}
                 maxBoundsViscosity={MAP_CONFIG.BOUNDS_VISCOSITY}
             >
+
                 {/* 시군구 면 레이어 - 미션 색칠 적용 */}
                 <GeoJSON
                     key={`region-${regionName}-${missionCounts.size}`}
@@ -203,7 +205,6 @@ function RegionMap({
                     />
                 )}
 
-                {/* 지역명 라벨 */}
                 <RegionLabels sigunguCenters={sigunguCenters} />
             </MapContainer>
         </div>

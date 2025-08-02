@@ -1,5 +1,6 @@
 import { useMap } from 'react-leaflet';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import L from 'leaflet';
 
 interface RegionLabelsProps {
     sigunguCenters: Array<{
@@ -9,64 +10,77 @@ interface RegionLabelsProps {
     }>;
 }
 
-// 지역명 라벨을 지도 위에 표시하는 컴포넌트
 function RegionLabels({ sigunguCenters }: RegionLabelsProps) {
     const map = useMap();
-    const [labels, setLabels] = useState<Array<{
-        name: string;
-        x: number;
-        y: number;
-    }>>([]);
 
-    // 지도 이동/줌 시 라벨 위치 업데이트
-    useEffect(() => {
-        const updateLabelPositions = () => {
-            const newLabels = sigunguCenters.map(center => {
-                const point = map.latLngToContainerPoint([center.lat, center.lng]);
-                return {
-                    name: center.name,
-                    x: point.x,
-                    y: point.y
-                };
-            });
-            setLabels(newLabels);
+    // 텍스트 크기 계산 함수
+    const calculateTextSize = (text: string, fontSize: number = 11) => {
+        // 대략적인 크기 계산 (한글/영문 고려)
+        const koreanCharWidth = fontSize * 0.9;
+        const englishCharWidth = fontSize * 0.6;
+
+        let width = 0;
+        for (let char of text) {
+            if (/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(char)) {
+                width += koreanCharWidth;
+            } else {
+                width += englishCharWidth;
+            }
+        }
+
+        return {
+            width: Math.ceil(width + 4), // 여백 추가
+            height: fontSize + 4
         };
+    };
 
-        // 초기 위치 설정
-        updateLabelPositions();
+    useEffect(() => {
+        // 전용 pane 생성
+        let labelPane = map.getPane('regionLabels');
+        if (!labelPane) {
+            labelPane = map.createPane('regionLabels');
+            labelPane.style.zIndex = '650';
+            labelPane.style.pointerEvents = 'none';
+        }
 
-        // 지도 이벤트 리스너 등록
-        map.on('zoom', updateLabelPositions);
-        map.on('move', updateLabelPositions);
-        map.on('resize', updateLabelPositions);
+        // 기존 레이블 제거
+        map.eachLayer((layer) => {
+            if (layer instanceof L.Marker && (layer as any)._isRegionLabel) {
+                map.removeLayer(layer);
+            }
+        });
 
-        // 클린업
+        // 새로운 레이블 추가
+        sigunguCenters.forEach(({ name, lat, lng }) => {
+            const textSize = calculateTextSize(name, 11);
+
+            const labelIcon = L.divIcon({
+                className: 'region-label-dynamic',
+                html: `<span>${name}</span>`,
+                iconSize: [textSize.width, textSize.height],
+                iconAnchor: [textSize.width / 2, textSize.height / 2],
+            });
+
+            const marker = L.marker([lat, lng], {
+                icon: labelIcon,
+                interactive: false,
+                pane: 'regionLabels'
+            });
+
+            (marker as any)._isRegionLabel = true;
+            marker.addTo(map);
+        });
+
         return () => {
-            map.off('zoom', updateLabelPositions);
-            map.off('move', updateLabelPositions);
-            map.off('resize', updateLabelPositions);
+            map.eachLayer((layer) => {
+                if (layer instanceof L.Marker && (layer as any)._isRegionLabel) {
+                    map.removeLayer(layer);
+                }
+            });
         };
     }, [map, sigunguCenters]);
 
-    return (
-        <>
-            {labels.map((label, index) => (
-                <div
-                    key={`label-${index}`}
-                    className="absolute pointer-events-none select-none z-10"
-                    style={{
-                        left: label.x,
-                        top: label.y,
-                        transform: 'translate(-50%, -50%)'
-                    }}
-                >
-                    <div className={`px-2 py-1 rounded text-[10px] whitespace-nowrap ${'text-gray-700'}`}>
-                        {label.name}
-                    </div>
-                </div>
-            ))}
-        </>
-    );
+    return null;
 }
 
 export default RegionLabels;
