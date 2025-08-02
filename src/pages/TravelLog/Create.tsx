@@ -8,16 +8,17 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { parseTagToBlocks } from '../../helper/parseTagToBlocks';
 import { TravelLogApi, TravelLogForm } from '../../services/TravelLogApi';
 import TravelLogEditor from '../../components/TravelLog/TravelLogEditor';
+import { useLocationContext } from '../../contexts/LocationContext';
 
 
 function TravelLogCreate() {
     const [date, setDate] = useState<Date | null>(null)
     const [title, setTitle] = useState<string>('')
     const [content, setContent] = useState<string>('')
+    const {currentLocation} = useLocationContext()
 
     const navigate = useNavigate()
-    const params = useParams();
-    const regionCode = params.id;
+    const regionCode = currentLocation?.regionCode;
 
     const handleBackClick = () => {
         navigate(-1)

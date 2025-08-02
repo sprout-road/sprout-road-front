@@ -87,6 +87,11 @@ function Portfolio() {
             handleCopyLink(shareData);
         }
     };
+    
+    const handleClickTravelLogReport = () => {
+        navigate(`/portfolio/travel-logs/users/${userId}?from=${fromDate}&to=${endDate}`)
+    }
+    
 
     // 조건부 렌더링을 모든 훅 호출 이후에 배치
     if (userId === undefined) {
@@ -108,7 +113,7 @@ function Portfolio() {
     function handleMissionResult() {
         navigate(`/portfolio/missions/users/${userId}?from=${fromDate}&to=${endDate}`);
     }
-
+    
     return (
         <div>
             <Header onClick={handleBackClick}>디지털 포트폴리오</Header>
@@ -140,7 +145,7 @@ function Portfolio() {
                     <span className="font-bold">방문 장소</span>
                 </div>
                 <span className="px-10 font-bold text-black">총 {portfolioCountData?.travelCount}곳을 방문했어요</span>
-                <div className="px-10 flex text-gray-400"><span className="border-b-2">방문한 장소의 트레블 로그 보기</span></div>
+                <div className="px-10 flex text-gray-400"><span className="border-b-2" onClick={handleClickTravelLogReport}>방문한 장소의 트레블 로그 보기</span></div>
                 <div className="flex flex-row justify-center mt-40 gap-4">
                     <button
                         className="px-4 py-2 w-40 text-black font-bold bg-gray-300 rounded-lg hover:bg-gray-400 transition-colors"

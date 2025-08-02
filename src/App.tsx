@@ -12,6 +12,8 @@ import Reward from "./pages/Reward.tsx";
 import PortfolioGeneration from './pages/Portfolio/Generation';
 import Portfolio from './pages/Portfolio';
 import PortfolioMission from "./pages/Portfolio/PortfolioMission.tsx";
+import TravelLogRecord from './pages/Portfolio/TravelLogRecord.tsx';
+
 
 function App() {
     return (
@@ -28,6 +30,7 @@ function App() {
                 <Route path="/portfolio" element={<PortfolioGeneration />} />
                 <Route path="/portfolio/generate/users/:userId" element={<Portfolio />} />
                 <Route path="/portfolio/missions/users/:userId" element={<PortfolioMission />} />
+                <Route path="/portfolio/travel-logs/users/:userId" element={<TravelLogRecord />} />
             </Routes>
         </LocationProvider>
     );
