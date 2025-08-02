@@ -1,6 +1,7 @@
 import {GeoJSON, MapContainer} from 'react-leaflet';
 import {useMemo} from 'react';
 import {Feature, Geometry} from 'geojson';
+import {PathOptions} from 'leaflet';
 import {LocationResponse, RegionGeoJson} from '../../types/geoTypes';
 import RegionLabels from './RegionLabels';
 import {useBoundaryData} from './hooks/useBoundaryData';
@@ -21,19 +22,22 @@ interface RegionMapProps {
     regionName: string;
     isCompact?: boolean;
     onSigunguClick?: (regionCode: string, regionName: string) => void;
+    missionCounts?: Map<string, number>;
 }
+
+type ColorIntensity = 'light' | 'medium' | 'dark';
 
 function RegionMap({
                        regionData,
                        sidoCode,
                        regionName,
                        isCompact = false,
-                       onSigunguClick
+                       onSigunguClick,
+                       missionCounts = new Map()
                    }: RegionMapProps) {
-    // Custom Hook으로 바운더리 데이터 관리
+
     const { boundaryData } = useBoundaryData(sidoCode);
 
-    // 계산된 값들 (메모이제이션)
     const regionBounds = useMemo(() =>
         calculateRegionBounds(regionData), [regionData]
     );
@@ -42,45 +46,120 @@ function RegionMap({
         calculateSigunguCenters(regionData), [regionData]
     );
 
-    // 스타일 함수 (타입 안전)
-    const sigunguStyleFunction = useMemo(() =>
-            (feature: Feature<Geometry, unknown> | undefined) => getSigunguStyle(feature),
-        []
-    );
+    // 색상 강도 계산 함수
+    const getColorIntensity = (count: number, maxCount: number): ColorIntensity | null => {
+        if (count === 0) return null;
+
+        // 최대값이 1인 경우에만 medium으로 고정
+        if (maxCount === 1) {
+            return 'medium';
+        }
+
+        // 3단계로 정확하게 구분
+        const percentage = (count / maxCount) * 100;
+
+        if (percentage <= 33) return 'light';
+        if (percentage <= 66) return 'medium';
+        return 'dark';
+    };
+
+    // 미션 기반 스타일 함수
+    const getMissionAwareStyle = useMemo(() => {
+        return (feature: Feature<Geometry, unknown> | undefined): PathOptions => {
+            // 기본 스타일 가져오기
+            const baseStyle = getSigunguStyle(feature);
+
+            // 미션 데이터가 없거나 feature가 없으면 기본 스타일 반환
+            if (!feature?.properties || missionCounts.size === 0) {
+                return baseStyle;
+            }
+
+            const regionCode = (feature.properties as any).regionCode;
+            const count = missionCounts.get(regionCode) || 0;
+
+            // 미션이 없으면 기본 스타일
+            if (count === 0) {
+                return baseStyle;
+            }
+
+            // 미션이 있으면 색칠
+            const maxCount = Math.max(...Array.from(missionCounts.values()));
+            const intensity = getColorIntensity(count, maxCount);
+
+            if (!intensity) {
+                return baseStyle;
+            }
+
+            // 색상 매핑
+            const colorMap: Record<ColorIntensity, Partial<PathOptions>> = {
+                light: {
+                    fillColor: '#bbf7d0',
+                    fillOpacity: 0.6
+                },
+                medium: {
+                    fillColor: '#22c55e',
+                    fillOpacity: 0.7
+                },
+                dark: {
+                    fillColor: '#15803d',
+                    fillOpacity: 0.8
+                }
+            };
+
+            // 기본 스타일에 미션 색상 오버라이드
+            return {
+                ...baseStyle,
+                ...colorMap[intensity],
+                color: '#666666', // 경계선은 회색으로 유지
+                weight: 1
+            };
+        };
+    }, [missionCounts]);
 
     // 각 시군구 feature에 대한 이벤트 핸들러
     const onEachFeature = useMemo(() =>
         (feature: Feature<Geometry, unknown>, layer: L.Layer) => {
             if (!isSigunguFeature(feature) || !onSigunguClick) return;
 
-            // 타입 단언으로 이벤트 메서드 접근
             const eventLayer = layer as L.Layer & {
                 on: (event: string, handler: () => void) => void;
                 setStyle: (style: L.PathOptions) => void;
             };
 
-            // 클릭 이벤트 처리 - RegionProperties 구조에 맞게 수정
+            // 클릭 이벤트 처리
             eventLayer.on('click', () => {
                 console.log('🗺️ 클릭된 feature:', feature.properties);
-                const regionCode = feature.properties.regionCode;  // sigCode -> regionCode
-                const regionName = feature.properties.regionName;  // 변경 없음
+                const regionCode = feature.properties.regionCode;
+                const regionName = feature.properties.regionName;
                 console.log('🗺️ 전달할 데이터:', { regionCode, regionName });
                 onSigunguClick(regionCode, regionName);
+
+                // 클릭시 파란색 테두리 추가
+                const currentStyle = getMissionAwareStyle(feature);
+                eventLayer.setStyle({
+                    ...currentStyle,
+                    weight: 4,
+                    color: '#4A90E2',
+                });
             });
 
-            // 호버 효과
+            // 호버 효과 - 원래 색상 유지하면서 테두리만 변경
             eventLayer.on('mouseover', () => {
+                // 현재 스타일 가져오기
+                const currentStyle = getMissionAwareStyle(feature);
+
                 eventLayer.setStyle({
+                    ...currentStyle, // 기존 색상 유지
                     weight: 3,
-                    color: '#4A90E2',
-                    fillOpacity: 0.4
+                    color: '#4A90E2', // 테두리만 파란색으로
                 });
             });
 
             eventLayer.on('mouseout', () => {
-                eventLayer.setStyle(getSigunguStyle(feature));
+                // 원래 미션 스타일로 복원
+                eventLayer.setStyle(getMissionAwareStyle(feature));
             });
-        }, [onSigunguClick]
+        }, [onSigunguClick, missionCounts, getMissionAwareStyle]
     );
 
     const zoomConfig = isCompact ? MAP_CONFIG.ZOOM.COMPACT : MAP_CONFIG.ZOOM.NORMAL;
@@ -107,11 +186,11 @@ function RegionMap({
                 maxBounds={regionBounds}
                 maxBoundsViscosity={MAP_CONFIG.BOUNDS_VISCOSITY}
             >
-                {/* 시군구 면 레이어 */}
+                {/* 시군구 면 레이어 - 미션 색칠 적용 */}
                 <GeoJSON
-                    key={`region-${regionName}`}
+                    key={`region-${regionName}-${missionCounts.size}`}
                     data={regionData}
-                    style={sigunguStyleFunction}
+                    style={getMissionAwareStyle}
                     onEachFeature={onEachFeature}
                 />
 
