@@ -8,6 +8,7 @@ import './index.css';
 import Login from './pages/Login';
 import TravelLogDetail from './pages/TravelLog';
 import TravelLogCreate from './pages/TravelLog/Create';
+import Reward from "./pages/Reward.tsx";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/region/:sidoCode" element={<RegionDetail />} />
                 <Route path="/travel-log/:diaryId" element={<TravelLogDetail />} />
                 <Route path="/create-diary" element={<TravelLogCreate />} />
+                <Route path="/reward" element={<Reward />} />
             </Routes>
         </LocationProvider>
     );
