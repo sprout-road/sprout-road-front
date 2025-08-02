@@ -1,4 +1,4 @@
-import {useNavigate, useSearchParams} from "react-router-dom"
+import {useNavigate, useParams, useSearchParams} from "react-router-dom"
 import Header from "../../components/common/Header"
 import { FaRegCheckCircle } from "react-icons/fa";
 import { LuSprout } from "react-icons/lu";
@@ -12,16 +12,18 @@ import { useUserInfo } from "../../hooks/useUserInfo";
 
 function Portfolio() {
     const { userInfo: userData } = useUserInfo()
+
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const { currentLocation, isLocationLoading } = useLocationContext()
+    const { userId } = useParams<{ userId: string }>();
     
-    const fromDate = searchParams.get('from')
-    const endDate = searchParams.get('to')
+    const fromDate = searchParams.get('from') as string;
+    const endDate = searchParams.get('to') as string;
     const regionCode = currentLocation?.regionCode
 
     const {data: portfolioCountData, loading: portfolioCountLoading, error: portfolioCountError } = useUserPortfolio(
-        userData?.id,
+        userId,
         fromDate,     
         endDate,      
         regionCode
@@ -31,7 +33,7 @@ function Portfolio() {
         navigate('/portfolio')
     }
 
-    const splitDate = (date: string) => {
+    const splitDate = (date: string) : string => {
         const [year, month, day] = date.split('-')
         return `${year}년 ${month}월 ${day}일`;
     }
@@ -49,9 +51,9 @@ function Portfolio() {
             try {
                 await navigator.share(shareData);
                 console.log('공유 완료');
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    console.log('공유 실패, 링크 복사로 대체:', error);
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.log('공유 실패, 링크 복사로 대체:', err);
                     handleCopyLink(shareData);
                 }
             }
@@ -82,7 +84,7 @@ function Portfolio() {
     };
 
     // 조건부 렌더링을 모든 훅 호출 이후에 배치
-    if (userData?.id === undefined) {
+    if (userId === undefined) {
         return <ErrorComponent error={"유저 아이디를 찾을 수 없습니다"} />
     }
 
@@ -96,6 +98,10 @@ function Portfolio() {
 
     if (portfolioCountError) {
         return <ErrorComponent error={portfolioCountError} />
+    }
+
+    function handleMissionResult() {
+        navigate(`/portfolio/missions/users/${userId}?from=${fromDate}&to=${endDate}`);
     }
 
     return (
@@ -121,7 +127,7 @@ function Portfolio() {
                     <span className="text-black font-bold">미션 성과</span>
                 </div>
                 <span className="px-10 font-bold text-black">미션 {portfolioCountData?.missionCount}개 달성</span>
-                <div className="px-10 flex text-gray-400">
+                <div className="px-10 flex text-gray-400" onClick={handleMissionResult}>
                     <span className="border-b-2">미션 수행 결과 보기</span>
                 </div>
                 <div className="flex flex-row px-8 justify-baseline items-center">

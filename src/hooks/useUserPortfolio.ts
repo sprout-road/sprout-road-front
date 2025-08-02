@@ -3,7 +3,7 @@ import { portfolioApi } from "../services/portfolioApi";
 import { PortfolioCount, UsePortfolioState } from "../types/portfolio";
 
 export const useUserPortfolio = (
-    userId: number | undefined, 
+    userId: string | undefined,
     fromDateString: string | null,   
     toDateString: string | null, 
     regionCode: string | undefined

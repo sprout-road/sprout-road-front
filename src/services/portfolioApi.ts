@@ -1,7 +1,7 @@
 import { API_COMMON_URL } from "../constants/constants";
 
 export class portfolioApi {
-    static async getCountPortfolio(userId:number, from: Date, to: Date, regionCode: string) {
+    static async getCountPortfolio(userId:string, from: Date, to: Date, regionCode: string) {
         try {
             const formatingFrom = from.toISOString().split('T')[0]; 
             const formatingTo = to.toISOString().split('T')[0];     
