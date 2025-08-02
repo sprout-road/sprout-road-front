@@ -1,6 +1,6 @@
 interface ErrorComponentProps {
     error: string
-    refetch: () => void
+    refetch?: () => void
 }
 
 function ErrorComponent({error, refetch}: ErrorComponentProps) {
