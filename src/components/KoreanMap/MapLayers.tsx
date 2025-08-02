@@ -1,8 +1,8 @@
 import {GeoJSON} from 'react-leaflet';
 import {Layer} from 'leaflet';
 import {useNavigate} from 'react-router-dom';
-import {SidoGeoJson} from '../../../types/geoTypes';
-import {getSidoStyle} from '../../../shared/utils/mapStyles';
+import {SidoGeoJson} from '../../types/geoTypes.ts';
+import {getSidoStyle} from '../../shared/utils/mapStyles.ts';
 
 interface MapLayersProps {
     sidoData: SidoGeoJson;

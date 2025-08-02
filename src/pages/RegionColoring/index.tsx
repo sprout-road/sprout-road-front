@@ -20,10 +20,12 @@ function RegionColoring() {
 
     // 시도 데이터 로드 (한 번만)
     useEffect(() => {
-        const fetchSidoData = async () => {
+        const fetchRegionData = async () => {
             try {
                 const data = await LocationApiService.getAllSido();
                 setSidoData(data);
+                const missionHistory = await LocationApiService.getMissionHistory();
+                console.log(missionHistory);
             } catch (err) {
                 setError(err instanceof Error ? err.message : '지도 데이터를 불러오는데 실패했습니다.');
             } finally {
@@ -31,7 +33,7 @@ function RegionColoring() {
             }
         };
 
-        fetchSidoData();
+        fetchRegionData();
     }, []);
 
     // 📱 로딩 상태들

@@ -1,7 +1,7 @@
 import {MapContainer} from 'react-leaflet';
 import {SidoGeoJson} from '../../types/geoTypes';
 import {KOREAN_BOUNDS, MAP_CONFIG} from '../../shared/constants/mapConstants';
-import MapLayers from './components/MapLayers';
+import MapLayers from './MapLayers.tsx';
 import 'leaflet/dist/leaflet.css';
 
 interface KoreanMapProps {

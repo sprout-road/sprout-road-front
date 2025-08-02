@@ -1,6 +1,6 @@
 import {LocationResponse, SidoBoundaryGeoJson} from '../types/geoTypes';
 
-const API_BASE_URL = 'https://api.deepdivers.store/api/gis';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 export class LocationApiService {
     /**
@@ -27,7 +27,7 @@ export class LocationApiService {
 
     static async findLocationV2(lat: number, lng: number): Promise<LocationResponse> {
         try {
-            const response = await fetch(`${API_BASE_URL}/v2/locate?lat=${lat}&lng=${lng}`, {
+            const response = await fetch(`${API_BASE_URL}/gis/v2/locate?lat=${lat}&lng=${lng}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export class LocationApiService {
      */
     static async getSigunguBySidoCode(sidoCode: string) {
         try {
-            const response = await fetch(`${API_BASE_URL}/sigungu/${sidoCode}`);
+            const response = await fetch(`${API_BASE_URL}/gis/sigungu/${sidoCode}`);
             console.log("RESPONSE: ", response);
             if (!response.ok) {
                 throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
@@ -67,7 +67,7 @@ export class LocationApiService {
      */
     static async getRegionBySidoCode(sidoCode: string) {
         try {
-            const response = await fetch(`${API_BASE_URL}/regions/${sidoCode}`);
+            const response = await fetch(`${API_BASE_URL}/gis/regions/${sidoCode}`);
             console.log("RESPONSE: ", response);
             if (!response.ok) {
                 throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
@@ -85,7 +85,7 @@ export class LocationApiService {
      */
     static async getSidoBoundariesBySidoCode(sidoCode: string | unknown): Promise<SidoBoundaryGeoJson> {
         try {
-            const response = await fetch(`${API_BASE_URL}/sido/${sidoCode}/boundaries`);
+            const response = await fetch(`${API_BASE_URL}/gis/sido/${sidoCode}/boundaries`);
             console.log("SIDO BOUNDARY RESPONSE: ", response);
 
             if (!response.ok) {
@@ -104,7 +104,23 @@ export class LocationApiService {
      */
     static async getAllSido() {
         try {
-            const response = await fetch(`${API_BASE_URL}/sido`);
+            const response = await fetch(`${API_BASE_URL}/gis/sido`);
+            console.log("RESPONSE: ", response);
+
+            if (!response.ok) {
+                throw new Error(`서버 오류: ${response.status} ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('시도 데이터 조회 실패:', error);
+            throw new Error('시도 데이터를 가져오는데 실패했습니다.');
+        }
+    }
+
+    static async getMissionHistory() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/missions/history`);
             console.log("RESPONSE: ", response);
 
             if (!response.ok) {
