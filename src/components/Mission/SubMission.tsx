@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { IoRefreshCircle } from "react-icons/io5";
-import TextMissionContent from "./TextMissionContent";
-import ImageMissionContent from "./ImageMissionContent";
-import { missionApi } from "../../services/missionApi";
-import { MissionSubmitBody } from "../../types/missionTypes";
-import { useLocationContext } from "../../contexts/LocationContext";
+import {useState} from "react";
+import {IoRefreshCircle} from "react-icons/io5";
+import {missionApi} from "../../services/missionApi";
+import {MissionSubmitBody} from "../../types/missionTypes";
+import {useLocationContext} from "../../contexts/LocationContext";
 import LoadingSpinner from "../LoadingSpinner";
 import ErrorComponent from "../common/Error";
+import TextMissionContent from "./TextMissionContent.tsx";
+import ImageMissionContent from "./ImageMissionContent.tsx";
 
 interface SubMissionProps {
     children: React.ReactNode

@@ -10,6 +10,12 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useUserPortfolio } from "../../hooks/useUserPortfolio";
 import { useUserInfo } from "../../hooks/useUserInfo";
 
+interface ShareData {
+    title: string;
+    text: string;
+    url: string;
+}
+
 function Portfolio() {
     const { userInfo: userData } = useUserInfo()
 
@@ -17,15 +23,15 @@ function Portfolio() {
     const [searchParams] = useSearchParams()
     const { currentLocation, isLocationLoading } = useLocationContext()
     const { userId } = useParams<{ userId: string }>();
-    
+
     const fromDate = searchParams.get('from') as string;
     const endDate = searchParams.get('to') as string;
     const regionCode = currentLocation?.regionCode
 
     const {data: portfolioCountData, loading: portfolioCountLoading, error: portfolioCountError } = useUserPortfolio(
         userId,
-        fromDate,     
-        endDate,      
+        fromDate,
+        endDate,
         regionCode
     )
 
@@ -38,33 +44,8 @@ function Portfolio() {
         return `${year}년 ${month}월 ${day}일`;
     }
 
-    // 공유하기 기능
-    const handleShare = async () => {
-        const shareData = {
-            title: `${userData?.nickname}의 ${currentLocation?.regionName} 포트폴리오`,
-            text: `${splitDate(fromDate)} ~ ${splitDate(endDate)} 기간 동안 미션 ${portfolioCountData?.missionCount}개 달성, 총 ${portfolioCountData?.travelCount}곳 방문했어요!`,
-            url: window.location.href
-        };
-
-        // 모바일 웹앱이므로 Web Share API 우선 시도
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-                console.log('공유 완료');
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.log('공유 실패, 링크 복사로 대체:', err);
-                    handleCopyLink(shareData);
-                }
-            }
-        } else {
-            // Web Share API를 지원하지 않는 경우 링크 복사
-            handleCopyLink(shareData);
-        }
-    };
-
     // 링크 복사 기능
-    const handleCopyLink = async (shareData) => {
+    const handleCopyLink = async (shareData: ShareData) => {
         try {
             await navigator.clipboard.writeText(shareData.url);
             alert('포트폴리오 링크가 클립보드에 복사되었습니다!');
@@ -80,6 +61,30 @@ function Portfolio() {
             document.execCommand('copy');
             document.body.removeChild(textArea);
             alert('포트폴리오 링크가 클립보드에 복사되었습니다!');
+        }
+    };
+
+    // 공유하기 기능
+    const handleShare = async () => {
+        const shareData: ShareData = {
+            title: `${userData?.nickname}의 ${currentLocation?.regionName} 포트폴리오`,
+            text: `${splitDate(fromDate)} ~ ${splitDate(endDate)} 기간 동안 미션 ${portfolioCountData?.missionCount}개 달성, 총 ${portfolioCountData?.travelCount}곳 방문했어요!`,
+            url: window.location.href
+        };
+
+        // 모바일 웹앱이므로 Web Share API 우선 시도
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+                console.log('공유 완료');
+            } catch (err) {
+                if (err instanceof Error && err.name !== 'AbortError') {
+                    console.error('API 호출 실패:', err);
+                }
+            }
+        } else {
+            // Web Share API를 지원하지 않는 경우 링크 복사
+            handleCopyLink(shareData);
         }
     };
 
@@ -137,13 +142,13 @@ function Portfolio() {
                 <span className="px-10 font-bold text-black">총 {portfolioCountData?.travelCount}곳을 방문했어요</span>
                 <div className="px-10 flex text-gray-400"><span className="border-b-2">방문한 장소의 트레블 로그 보기</span></div>
                 <div className="flex flex-row justify-center mt-40 gap-4">
-                    <button 
+                    <button
                         className="px-4 py-2 w-40 text-black font-bold bg-gray-300 rounded-lg hover:bg-gray-400 transition-colors"
                         onClick={handleShare}
                     >
                         공유하기
                     </button>
-                    <button 
+                    <button
                         className="px-4 py-2 w-40 text-white font-bold bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
                     >
                         다운로드

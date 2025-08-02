@@ -67,7 +67,7 @@ function Home() {
       case 0:
         return "/menu/reward.png"
       case 1:
-        return "/menu/daily-mission.png"
+        return "/menu/daily-Mission.png"
       case 2:
         return "/menu/travel-log.png"
       case 3:
