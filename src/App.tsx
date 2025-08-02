@@ -13,6 +13,7 @@ import PortfolioGeneration from './pages/Portfolio/Generation';
 import Portfolio from './pages/Portfolio';
 import PortfolioMission from "./pages/Portfolio/PortfolioMission.tsx";
 import TravelLogRecord from './pages/Portfolio/TravelLogRecord.tsx';
+import RewardShop from './pages/RewardShop/index.tsx';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/main" element={<Home />} />
                 <Route path="/mission" element={<Mission />} />
+                <Route path="/reward-shop" element={<RewardShop />} />
                 <Route path="/region-coloring" element={<RegionColoring />} />
                 <Route path="/region/:sidoCode" element={<RegionDetail />} />
                 <Route path="/travel-log/:diaryId" element={<TravelLogDetail />} />
